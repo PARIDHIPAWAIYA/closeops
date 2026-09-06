@@ -2,6 +2,32 @@
 
 Running log. Newest entry first. Keep it short: what is done, what is next, decisions.
 
+## Sun 6 Sep — period-entries (Wave 2: accruals + depreciation)
+- Branch `build/period-entries` off main. TDD: tests first, then impl.
+- `closeops/tasks/accruals.py` (plan 6.2): `prepare` selects `booked:false` bills
+  with `service_period == 2026-09`, Dr expense / Cr Liabilities:Accrued:Expenses
+  dated 2026-09-30; Oct-service bills listed "do not accrue"; amounts >= materiality
+  flagged `needs_approval`. `apply` auto-posts the 5 non-material bills (17,850.00),
+  routes the 14,500 legal retainer (INV-001) to `exceptions/accruals.yaml` as one
+  OPEN exception (exercises C5 + C9). Approval round-trip: set an exception
+  `status: approved` and re-apply → the 14,500 books with an `approved-by` meta so
+  C5 stays green. bean-check runs on every apply.
+- `closeops/tasks/depreciation.py` (plan 6.3): straight-line (cost−salvage)/life,
+  half-month when placed in service during the period, zero+flag once fully
+  depreciated; prior accumulated read from ledger via per-asset `asset:` meta.
+  Hand-computed Sep: FA-001 777.78 (full), FA-002 160.00 (full), FA-003 150.00
+  (half, in service 09-20), FA-004 0.00 (fully depreciated → flagged). Total
+  1,087.78. `apply` writes one entry per booked asset with `asset:` meta.
+- `closeops/cli.py`: added `prepare <task>` / `apply <task>` with a `TASKS`
+  registry (accruals, depreciation) — kept alphabetical/minimal so bank-rec and
+  decide workers can append without conflict. check/report/status untouched.
+- Tests: `tests/test_accruals.py` (8), `tests/test_depreciation.py` (9) — copy the
+  repo to tmp so runs are non-destructive. 74 tests pass total.
+- Decision: build PR keeps the `ledger/2026-09/*` placeholders; real entries +
+  open exceptions are generated during the runtime close (Step 3), not committed
+  here (an open exception would turn CI red on a build PR).
+- Next: open PR `build: period-entries`, address CI comments.
+
 ## Sun 6 Sep — controls-ci rebased on merged data-ledger
 - Rebased `build/controls-ci` onto main (data-ledger merged). 57 tests pass.
 - `closeops check` on the real ledger: 8/10 pass. C7 and C10 FAIL — both expected

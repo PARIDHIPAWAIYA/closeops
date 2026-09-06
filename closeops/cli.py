@@ -13,11 +13,57 @@ import sys
 import click
 
 from . import controls, report
+from .tasks import accruals as accruals_task
+from .tasks import depreciation as depreciation_task
+
+# Task registry for prepare/apply. Wave 2 workers append their tasks here;
+# keep entries alphabetical so additions merge without conflict.
+TASKS = {
+    "accruals": accruals_task,
+    "depreciation": depreciation_task,
+}
+
+
+def _task_module(task):
+    mod = TASKS.get(task)
+    if mod is None:
+        known = ", ".join(sorted(TASKS))
+        raise click.ClickException(f"unknown task {task!r}; known tasks: {known}")
+    return mod
 
 
 @click.group()
 def main():
     """Month-end close that runs as reviewed pull requests."""
+
+
+@main.command()
+@click.argument("task")
+@click.option("--repo", default=".", help="Repository root.")
+def prepare(task, repo):
+    """Compute deterministic candidates for TASK into work/<task>/."""
+    mod = _task_module(task)
+    mod.prepare(repo)
+    click.echo(f"Prepared {task}: wrote work/{task}/candidates.json")
+
+
+@main.command()
+@click.argument("task")
+@click.option("--repo", default=".", help="Repository root.")
+def apply(task, repo):
+    """Render TASK entries into ledger/2026-09/ and run bean-check."""
+    mod = _task_module(task)
+    result = mod.apply(repo)
+    booked = result.get("booked", [])
+    click.echo(f"Applied {task}: {len(booked)} entry(ies) booked")
+    if result.get("exceptions"):
+        click.echo(f"  {result.get('open_exceptions', 0)} open exception(s)")
+    if result.get("flagged"):
+        click.echo(f"  flagged (no entry): {', '.join(result['flagged'])}")
+    if not result.get("bean_check_ok", True):
+        click.echo("bean-check FAILED:")
+        click.echo(result.get("bean_check_output", ""))
+        sys.exit(1)
 
 
 @main.command()
