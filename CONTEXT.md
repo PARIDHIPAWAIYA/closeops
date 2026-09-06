@@ -2,6 +2,22 @@
 
 Running log. Newest entry first. Keep it short: what is done, what is next, decisions.
 
+## Sun 6 Sep — controls-ci rebased on merged data-ledger
+- Rebased `build/controls-ci` onto main (data-ledger merged). 57 tests pass.
+- `closeops check` on the real ledger: 8/10 pass. C7 and C10 FAIL — both expected
+  pre-bank-rec (Wave 2), NOT controls bugs:
+  - C7: bank-rec has not posted September's ~120 bank lines and
+    `exceptions/bank-rec-reconciling.json` (outstanding cheques / deposits in
+    transit, a bank-rec output) does not exist yet. Reconciles after bank-rec.
+  - C10: `Assets:Dodo:Balance` = 15,000 = payments − refunds with zero payout
+    clearings posted (the `DODO PAYOUT` lines are bank-rec traps T14). Nets after
+    bank-rec posts the payout credits.
+- Wave-2 follow-up (flagged to orchestrator): confirm the C10 "paid-out gross"
+  definition against bank-rec's actual Dodo postings — po_002's fee (150) is
+  omitted from the record (T14), so whether Dodo nets to 0 or to the 150 residual
+  depends on how bank-rec books the missing fee. C10 kept as the plan's literal
+  formula (gross = payout.amount + fee) for now; revisit once bank-rec lands.
+
 ## Sun 6 Sep — Wave 1: data-ledger (branch build/data-ledger)
 - Done: `closeops/models.py` (StatementLine, Invoice, Asset, Payout, Candidate,
   Decision, Exception, ControlResult — Decimal money, `from_dict`/`to_dict`).
