@@ -15,8 +15,8 @@
   confidence: '0.90'
   decided_by: worker
   trace: neatlogs:7853ef917eac793eb6376cc1283d467f
-  status: open
-  reviewer_note: ''
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
   session_id: closeops-12
   timestamp: '2026-09-06T11:24:14Z'
 - id: BR-002
@@ -43,8 +43,8 @@
   confidence: '0.70'
   decided_by: worker
   trace: neatlogs:7853ef917eac793eb6376cc1283d467f
-  status: open
-  reviewer_note: ''
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
   session_id: closeops-12
   timestamp: '2026-09-06T11:24:14Z'
 - id: BR-003
@@ -71,8 +71,8 @@
   confidence: '0.70'
   decided_by: worker
   trace: neatlogs:7853ef917eac793eb6376cc1283d467f
-  status: open
-  reviewer_note: ''
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
   session_id: closeops-12
   timestamp: '2026-09-06T11:24:14Z'
 - id: BR-004
@@ -99,8 +99,8 @@
   confidence: '0.70'
   decided_by: worker
   trace: neatlogs:7853ef917eac793eb6376cc1283d467f
-  status: open
-  reviewer_note: ''
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
   session_id: closeops-12
   timestamp: '2026-09-06T11:24:14Z'
 - id: BR-005
@@ -127,8 +127,8 @@
   confidence: '0.70'
   decided_by: worker
   trace: neatlogs:7853ef917eac793eb6376cc1283d467f
-  status: open
-  reviewer_note: ''
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
   session_id: closeops-12
   timestamp: '2026-09-06T11:24:14Z'
 - id: BR-006
@@ -151,8 +151,8 @@
   confidence: '0.65'
   decided_by: worker
   trace: neatlogs:7853ef917eac793eb6376cc1283d467f
-  status: open
-  reviewer_note: ''
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
   session_id: closeops-12
   timestamp: '2026-09-06T11:24:14Z'
 - id: BR-007
@@ -179,8 +179,8 @@
   confidence: '0.70'
   decided_by: worker
   trace: neatlogs:7853ef917eac793eb6376cc1283d467f
-  status: open
-  reviewer_note: ''
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
   session_id: closeops-12
   timestamp: '2026-09-06T11:24:14Z'
 - id: BR-008
@@ -203,8 +203,8 @@
   confidence: '0.65'
   decided_by: worker
   trace: neatlogs:7853ef917eac793eb6376cc1283d467f
-  status: open
-  reviewer_note: ''
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
   session_id: closeops-12
   timestamp: '2026-09-06T11:24:14Z'
 - id: BR-009
@@ -227,8 +227,8 @@
   confidence: '0.65'
   decided_by: worker
   trace: neatlogs:7853ef917eac793eb6376cc1283d467f
-  status: open
-  reviewer_note: ''
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
   session_id: closeops-12
   timestamp: '2026-09-06T11:24:14Z'
 - id: BR-010
@@ -251,8 +251,8 @@
   confidence: '0.65'
   decided_by: worker
   trace: neatlogs:7853ef917eac793eb6376cc1283d467f
-  status: open
-  reviewer_note: ''
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
   session_id: closeops-12
   timestamp: '2026-09-06T11:24:14Z'
 - id: BR-011
@@ -277,8 +277,8 @@
   confidence: '0.80'
   decided_by: worker
   trace: neatlogs:7853ef917eac793eb6376cc1283d467f
-  status: open
-  reviewer_note: ''
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
   session_id: closeops-12
   timestamp: '2026-09-06T11:24:14Z'
 - id: BR-012
@@ -303,8 +303,8 @@
   confidence: '0.80'
   decided_by: worker
   trace: neatlogs:7853ef917eac793eb6376cc1283d467f
-  status: open
-  reviewer_note: ''
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
   session_id: closeops-12
   timestamp: '2026-09-06T11:24:14Z'
 - id: BR-013
@@ -329,8 +329,8 @@
   confidence: '0.80'
   decided_by: worker
   trace: neatlogs:7853ef917eac793eb6376cc1283d467f
-  status: open
-  reviewer_note: ''
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
   session_id: closeops-12
   timestamp: '2026-09-06T11:24:14Z'
 - id: BR-014
@@ -343,15 +343,17 @@
     date: '2026-09-14'
     narration: ZOOM VIDEO - rule GITHUB|NOTION|SLACK|ZOOM|FIGMA
     postings:
-    - account: Expenses:Software
+    - account: Assets:AR
       amount: '499.00'
     - account: Assets:Bank:Operating
       amount: '-499.00'
   confidence: '0.40'
   decided_by: worker
   trace: neatlogs:7853ef917eac793eb6376cc1283d467f
-  status: open
-  reviewer_note: ''
+  status: approved
+  reviewer_note: 'Duplicate ZOOM charge: cash left the account, so book a refund receivable
+    rather than double-booking the expense. Refund requested from vendor. (reclassified
+    Expenses:Software -> Assets:AR)'
   session_id: closeops-12
   timestamp: '2026-09-06T11:24:14Z'
 - id: BR-015
@@ -365,15 +367,16 @@
     date: '2026-09-15'
     narration: POS 4471 SHENZHEN - unknown, route to Suspense
     postings:
-    - account: Equity:Suspense
+    - account: Expenses:Office
       amount: '820.00'
     - account: Assets:Bank:Operating
       amount: '-820.00'
   confidence: '0.20'
   decided_by: worker
   trace: neatlogs:7853ef917eac793eb6376cc1283d467f
-  status: open
-  reviewer_note: ''
+  status: approved
+  reviewer_note: 'Identified: Shenzhen POS is our office-supplies vendor. (reclassified
+    Equity:Suspense -> Expenses:Office)'
   session_id: closeops-12
   timestamp: '2026-09-06T11:24:14Z'
 - id: BR-016
@@ -387,15 +390,16 @@
     date: '2026-09-16'
     narration: POS 8823 SHENZHEN - unknown, route to Suspense
     postings:
-    - account: Equity:Suspense
+    - account: Expenses:Office
       amount: '950.00'
     - account: Assets:Bank:Operating
       amount: '-950.00'
   confidence: '0.20'
   decided_by: worker
   trace: neatlogs:7853ef917eac793eb6376cc1283d467f
-  status: open
-  reviewer_note: ''
+  status: approved
+  reviewer_note: 'Identified: Shenzhen POS is our office-supplies vendor. (reclassified
+    Equity:Suspense -> Expenses:Office)'
   session_id: closeops-12
   timestamp: '2026-09-06T11:24:14Z'
 - id: BR-017
@@ -409,15 +413,16 @@
     date: '2026-09-17'
     narration: ATM WITHDRAWAL LAGOS - unknown, route to Suspense
     postings:
-    - account: Equity:Suspense
+    - account: Expenses:Travel
       amount: '1080.00'
     - account: Assets:Bank:Operating
       amount: '-1080.00'
   confidence: '0.20'
   decided_by: worker
   trace: neatlogs:7853ef917eac793eb6376cc1283d467f
-  status: open
-  reviewer_note: ''
+  status: approved
+  reviewer_note: 'Identified: Lagos ATM withdrawal by the sales lead on the Nigeria
+    trip. (reclassified Equity:Suspense -> Expenses:Travel)'
   session_id: closeops-12
   timestamp: '2026-09-06T11:24:14Z'
 - id: BR-018
@@ -440,8 +445,8 @@
   confidence: '0.65'
   decided_by: worker
   trace: neatlogs:7853ef917eac793eb6376cc1283d467f
-  status: open
-  reviewer_note: ''
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
   session_id: closeops-12
   timestamp: '2026-09-06T11:24:14Z'
 - id: BR-019
@@ -464,8 +469,8 @@
   confidence: '0.95'
   decided_by: worker
   trace: neatlogs:7853ef917eac793eb6376cc1283d467f
-  status: open
-  reviewer_note: ''
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
   session_id: closeops-12
   timestamp: '2026-09-06T11:24:14Z'
 - id: BR-020
@@ -488,8 +493,8 @@
   confidence: '0.65'
   decided_by: worker
   trace: neatlogs:7853ef917eac793eb6376cc1283d467f
-  status: open
-  reviewer_note: ''
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
   session_id: closeops-12
   timestamp: '2026-09-06T11:24:14Z'
 - id: BR-021
@@ -512,8 +517,8 @@
   confidence: '0.65'
   decided_by: worker
   trace: neatlogs:7853ef917eac793eb6376cc1283d467f
-  status: open
-  reviewer_note: ''
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
   session_id: closeops-12
   timestamp: '2026-09-06T11:24:14Z'
 - id: BR-022
@@ -534,7 +539,7 @@
   confidence: '0.80'
   decided_by: worker
   trace: neatlogs:7853ef917eac793eb6376cc1283d467f
-  status: open
-  reviewer_note: ''
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
   session_id: closeops-12
   timestamp: '2026-09-06T11:24:14Z'
