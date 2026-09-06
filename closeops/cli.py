@@ -64,6 +64,9 @@ def apply(task, repo):
     click.echo(f"Applied {task}: {len(booked)} entry(ies) booked")
     if result.get("exceptions"):
         click.echo(f"  {result.get('open_exceptions', 0)} open exception(s)")
+    if result.get("rejected"):
+        click.echo(f"  {result['rejected']} rejected line(s) remain unposted; "
+                   "C7 will fail until corrected and approved")
     if result.get("flagged"):
         click.echo(f"  flagged (no entry): {', '.join(result['flagged'])}")
     if not result.get("bean_check_ok", True):
