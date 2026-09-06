@@ -1,0 +1,30 @@
+{
+  "outstanding_cheques": [
+    {
+      "reference": "cheque-1042",
+      "date": "2026-09-29",
+      "payee": "CONTRACTOR 1",
+      "amount": "-3400.00"
+    },
+    {
+      "reference": "cheque-1043",
+      "date": "2026-09-29",
+      "payee": "CONTRACTOR 2",
+      "amount": "-1750.00"
+    },
+    {
+      "reference": "cheque-1044",
+      "date": "2026-09-29",
+      "payee": "CONTRACTOR 3",
+      "amount": "-980.00"
+    }
+  ],
+  "deposits_in_transit": [
+    {
+      "reference": "deposit-in-transit",
+      "date": "2026-09-30",
+      "payee": "LATE PAYER CO",
+      "amount": "-4500.00"
+    }
+  ]
+}

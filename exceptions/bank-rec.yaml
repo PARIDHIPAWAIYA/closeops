@@ -1,0 +1,545 @@
+- id: BR-001
+  task: bank-rec
+  source: data/bank/sep-2026.csv#L5
+  description: GUSTO PAYROLL
+  kind: rule
+  issue: Line 5 (-12500.00 'GUSTO PAYROLL') - material amount - needs controller approval
+  proposed_entry:
+    date: '2026-09-02'
+    narration: GUSTO PAYROLL - rule GUSTO
+    postings:
+    - account: Expenses:Payroll:Salaries
+      amount: '12500.00'
+    - account: Assets:Bank:Operating
+      amount: '-12500.00'
+  confidence: '0.90'
+  decided_by: worker
+  trace: neatlogs:7853ef917eac793eb6376cc1283d467f
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
+  session_id: closeops-12
+  timestamp: '2026-09-06T11:24:14Z'
+- id: BR-002
+  task: bank-rec
+  source: data/bank/sep-2026.csv#L25
+  description: SPLITCO 1 PAYMENT
+  kind: split
+  issue: Line 25 (-6150.00 'SPLITCO 1 PAYMENT') - matches only as a split across multiple
+    bills
+  proposed_entry:
+    date: '2026-09-06'
+    narration: SPLITCO 1 PAYMENT - split across 2 bills
+    postings:
+    - account: Liabilities:AP
+      amount: '4100.00'
+      meta:
+        invoice: AP-0054
+    - account: Liabilities:AP
+      amount: '2050.00'
+      meta:
+        invoice: AP-0055
+    - account: Assets:Bank:Operating
+      amount: '-6150.00'
+  confidence: '0.70'
+  decided_by: worker
+  trace: neatlogs:7853ef917eac793eb6376cc1283d467f
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
+  session_id: closeops-12
+  timestamp: '2026-09-06T11:24:14Z'
+- id: BR-003
+  task: bank-rec
+  source: data/bank/sep-2026.csv#L31
+  description: SPLITCO 2 PAYMENT
+  kind: split
+  issue: Line 31 (-6345.00 'SPLITCO 2 PAYMENT') - matches only as a split across multiple
+    bills
+  proposed_entry:
+    date: '2026-09-07'
+    narration: SPLITCO 2 PAYMENT - split across 2 bills
+    postings:
+    - account: Liabilities:AP
+      amount: '4220.00'
+      meta:
+        invoice: AP-0056
+    - account: Liabilities:AP
+      amount: '2125.00'
+      meta:
+        invoice: AP-0057
+    - account: Assets:Bank:Operating
+      amount: '-6345.00'
+  confidence: '0.70'
+  decided_by: worker
+  trace: neatlogs:7853ef917eac793eb6376cc1283d467f
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
+  session_id: closeops-12
+  timestamp: '2026-09-06T11:24:14Z'
+- id: BR-004
+  task: bank-rec
+  source: data/bank/sep-2026.csv#L36
+  description: SPLITCO 3 PAYMENT
+  kind: split
+  issue: Line 36 (-6540.00 'SPLITCO 3 PAYMENT') - matches only as a split across multiple
+    bills
+  proposed_entry:
+    date: '2026-09-08'
+    narration: SPLITCO 3 PAYMENT - split across 2 bills
+    postings:
+    - account: Liabilities:AP
+      amount: '4340.00'
+      meta:
+        invoice: AP-0058
+    - account: Liabilities:AP
+      amount: '2200.00'
+      meta:
+        invoice: AP-0059
+    - account: Assets:Bank:Operating
+      amount: '-6540.00'
+  confidence: '0.70'
+  decided_by: worker
+  trace: neatlogs:7853ef917eac793eb6376cc1283d467f
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
+  session_id: closeops-12
+  timestamp: '2026-09-06T11:24:14Z'
+- id: BR-005
+  task: bank-rec
+  source: data/bank/sep-2026.csv#L41
+  description: SPLITCO 4 PAYMENT
+  kind: split
+  issue: Line 41 (-6735.00 'SPLITCO 4 PAYMENT') - matches only as a split across multiple
+    bills
+  proposed_entry:
+    date: '2026-09-09'
+    narration: SPLITCO 4 PAYMENT - split across 2 bills
+    postings:
+    - account: Liabilities:AP
+      amount: '4460.00'
+      meta:
+        invoice: AP-0060
+    - account: Liabilities:AP
+      amount: '2275.00'
+      meta:
+        invoice: AP-0061
+    - account: Assets:Bank:Operating
+      amount: '-6735.00'
+  confidence: '0.70'
+  decided_by: worker
+  trace: neatlogs:7853ef917eac793eb6376cc1283d467f
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
+  session_id: closeops-12
+  timestamp: '2026-09-06T11:24:14Z'
+- id: BR-006
+  task: bank-rec
+  source: data/bank/sep-2026.csv#L42
+  description: PARTIAL 1 PAYMENT
+  kind: partial
+  issue: Line 42 (-3120.00 'PARTIAL 1 PAYMENT') - partial payment, remainder stays
+    open
+  proposed_entry:
+    date: '2026-09-09'
+    narration: PARTIAL 1 PAYMENT - partial on AP-0064 (remainder 2080.00 open)
+    postings:
+    - account: Liabilities:AP
+      amount: '3120.00'
+      meta:
+        invoice: AP-0064
+    - account: Assets:Bank:Operating
+      amount: '-3120.00'
+  confidence: '0.65'
+  decided_by: worker
+  trace: neatlogs:7853ef917eac793eb6376cc1283d467f
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
+  session_id: closeops-12
+  timestamp: '2026-09-06T11:24:14Z'
+- id: BR-007
+  task: bank-rec
+  source: data/bank/sep-2026.csv#L47
+  description: SPLITCO 5 PAYMENT
+  kind: split
+  issue: Line 47 (-6930.00 'SPLITCO 5 PAYMENT') - matches only as a split across multiple
+    bills
+  proposed_entry:
+    date: '2026-09-10'
+    narration: SPLITCO 5 PAYMENT - split across 2 bills
+    postings:
+    - account: Liabilities:AP
+      amount: '4580.00'
+      meta:
+        invoice: AP-0062
+    - account: Liabilities:AP
+      amount: '2350.00'
+      meta:
+        invoice: AP-0063
+    - account: Assets:Bank:Operating
+      amount: '-6930.00'
+  confidence: '0.70'
+  decided_by: worker
+  trace: neatlogs:7853ef917eac793eb6376cc1283d467f
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
+  session_id: closeops-12
+  timestamp: '2026-09-06T11:24:14Z'
+- id: BR-008
+  task: bank-rec
+  source: data/bank/sep-2026.csv#L48
+  description: PARTIAL 2 PAYMENT
+  kind: partial
+  issue: Line 48 (-3204.00 'PARTIAL 2 PAYMENT') - partial payment, remainder stays
+    open
+  proposed_entry:
+    date: '2026-09-10'
+    narration: PARTIAL 2 PAYMENT - partial on AP-0065 (remainder 2136.00 open)
+    postings:
+    - account: Liabilities:AP
+      amount: '3204.00'
+      meta:
+        invoice: AP-0065
+    - account: Assets:Bank:Operating
+      amount: '-3204.00'
+  confidence: '0.65'
+  decided_by: worker
+  trace: neatlogs:7853ef917eac793eb6376cc1283d467f
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
+  session_id: closeops-12
+  timestamp: '2026-09-06T11:24:14Z'
+- id: BR-009
+  task: bank-rec
+  source: data/bank/sep-2026.csv#L53
+  description: PARTIAL 3 PAYMENT
+  kind: partial
+  issue: Line 53 (-3288.00 'PARTIAL 3 PAYMENT') - partial payment, remainder stays
+    open
+  proposed_entry:
+    date: '2026-09-11'
+    narration: PARTIAL 3 PAYMENT - partial on AP-0066 (remainder 2192.00 open)
+    postings:
+    - account: Liabilities:AP
+      amount: '3288.00'
+      meta:
+        invoice: AP-0066
+    - account: Assets:Bank:Operating
+      amount: '-3288.00'
+  confidence: '0.65'
+  decided_by: worker
+  trace: neatlogs:7853ef917eac793eb6376cc1283d467f
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
+  session_id: closeops-12
+  timestamp: '2026-09-06T11:24:14Z'
+- id: BR-010
+  task: bank-rec
+  source: data/bank/sep-2026.csv#L58
+  description: PARTIAL 4 PAYMENT
+  kind: partial
+  issue: Line 58 (-3372.00 'PARTIAL 4 PAYMENT') - partial payment, remainder stays
+    open
+  proposed_entry:
+    date: '2026-09-12'
+    narration: PARTIAL 4 PAYMENT - partial on AP-0067 (remainder 2248.00 open)
+    postings:
+    - account: Liabilities:AP
+      amount: '3372.00'
+      meta:
+        invoice: AP-0067
+    - account: Assets:Bank:Operating
+      amount: '-3372.00'
+  confidence: '0.65'
+  decided_by: worker
+  trace: neatlogs:7853ef917eac793eb6376cc1283d467f
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
+  session_id: closeops-12
+  timestamp: '2026-09-06T11:24:14Z'
+- id: BR-011
+  task: bank-rec
+  source: data/bank/sep-2026.csv#L59
+  description: EUROVEND 1 EUR PAYMENT
+  kind: fx
+  issue: Line 59 (-6148.80 'EUROVEND 1 EUR PAYMENT') - amount differs from the bill
+    within FX/rounding tolerance
+  proposed_entry:
+    date: '2026-09-12'
+    narration: EUROVEND 1 EUR PAYMENT - AP-0068 + FX/rounding
+    postings:
+    - account: Liabilities:AP
+      amount: '6100.00'
+      meta:
+        invoice: AP-0068
+    - account: Expenses:FX
+      amount: '48.80'
+    - account: Assets:Bank:Operating
+      amount: '-6148.80'
+  confidence: '0.80'
+  decided_by: worker
+  trace: neatlogs:7853ef917eac793eb6376cc1283d467f
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
+  session_id: closeops-12
+  timestamp: '2026-09-06T11:24:14Z'
+- id: BR-012
+  task: bank-rec
+  source: data/bank/sep-2026.csv#L64
+  description: EUROVEND 2 EUR PAYMENT
+  kind: fx
+  issue: Line 64 (-6360.48 'EUROVEND 2 EUR PAYMENT') - amount differs from the bill
+    within FX/rounding tolerance
+  proposed_entry:
+    date: '2026-09-13'
+    narration: EUROVEND 2 EUR PAYMENT - AP-0069 + FX/rounding
+    postings:
+    - account: Liabilities:AP
+      amount: '6310.00'
+      meta:
+        invoice: AP-0069
+    - account: Expenses:FX
+      amount: '50.48'
+    - account: Assets:Bank:Operating
+      amount: '-6360.48'
+  confidence: '0.80'
+  decided_by: worker
+  trace: neatlogs:7853ef917eac793eb6376cc1283d467f
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
+  session_id: closeops-12
+  timestamp: '2026-09-06T11:24:14Z'
+- id: BR-013
+  task: bank-rec
+  source: data/bank/sep-2026.csv#L69
+  description: EUROVEND 3 EUR PAYMENT
+  kind: fx
+  issue: Line 69 (-6572.16 'EUROVEND 3 EUR PAYMENT') - amount differs from the bill
+    within FX/rounding tolerance
+  proposed_entry:
+    date: '2026-09-14'
+    narration: EUROVEND 3 EUR PAYMENT - AP-0070 + FX/rounding
+    postings:
+    - account: Liabilities:AP
+      amount: '6520.00'
+      meta:
+        invoice: AP-0070
+    - account: Expenses:FX
+      amount: '52.16'
+    - account: Assets:Bank:Operating
+      amount: '-6572.16'
+  confidence: '0.80'
+  decided_by: worker
+  trace: neatlogs:7853ef917eac793eb6376cc1283d467f
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
+  session_id: closeops-12
+  timestamp: '2026-09-06T11:24:14Z'
+- id: BR-014
+  task: bank-rec
+  source: data/bank/sep-2026.csv#L71
+  description: ZOOM VIDEO
+  kind: duplicate
+  issue: Line 71 (-499.00 'ZOOM VIDEO') - possible duplicate charge
+  proposed_entry:
+    date: '2026-09-14'
+    narration: ZOOM VIDEO - rule GITHUB|NOTION|SLACK|ZOOM|FIGMA
+    postings:
+    - account: Assets:AR
+      amount: '499.00'
+    - account: Assets:Bank:Operating
+      amount: '-499.00'
+  confidence: '0.40'
+  decided_by: worker
+  trace: neatlogs:7853ef917eac793eb6376cc1283d467f
+  status: approved
+  reviewer_note: 'Duplicate ZOOM charge: cash left the account, so book a refund receivable
+    rather than double-booking the expense. Refund requested from vendor. (reclassified
+    Expenses:Software -> Assets:AR)'
+  session_id: closeops-12
+  timestamp: '2026-09-06T11:24:14Z'
+- id: BR-015
+  task: bank-rec
+  source: data/bank/sep-2026.csv#L76
+  description: POS 4471 SHENZHEN
+  kind: none
+  issue: Line 76 (-820.00 'POS 4471 SHENZHEN') - unknown counterparty, no confident
+    match
+  proposed_entry:
+    date: '2026-09-15'
+    narration: POS 4471 SHENZHEN - unknown, route to Suspense
+    postings:
+    - account: Expenses:Office
+      amount: '820.00'
+    - account: Assets:Bank:Operating
+      amount: '-820.00'
+  confidence: '0.20'
+  decided_by: worker
+  trace: neatlogs:7853ef917eac793eb6376cc1283d467f
+  status: approved
+  reviewer_note: 'Identified: Shenzhen POS is our office-supplies vendor. (reclassified
+    Equity:Suspense -> Expenses:Office)'
+  session_id: closeops-12
+  timestamp: '2026-09-06T11:24:14Z'
+- id: BR-016
+  task: bank-rec
+  source: data/bank/sep-2026.csv#L81
+  description: POS 8823 SHENZHEN
+  kind: none
+  issue: Line 81 (-950.00 'POS 8823 SHENZHEN') - unknown counterparty, no confident
+    match
+  proposed_entry:
+    date: '2026-09-16'
+    narration: POS 8823 SHENZHEN - unknown, route to Suspense
+    postings:
+    - account: Expenses:Office
+      amount: '950.00'
+    - account: Assets:Bank:Operating
+      amount: '-950.00'
+  confidence: '0.20'
+  decided_by: worker
+  trace: neatlogs:7853ef917eac793eb6376cc1283d467f
+  status: approved
+  reviewer_note: 'Identified: Shenzhen POS is our office-supplies vendor. (reclassified
+    Equity:Suspense -> Expenses:Office)'
+  session_id: closeops-12
+  timestamp: '2026-09-06T11:24:14Z'
+- id: BR-017
+  task: bank-rec
+  source: data/bank/sep-2026.csv#L86
+  description: ATM WITHDRAWAL LAGOS
+  kind: none
+  issue: Line 86 (-1080.00 'ATM WITHDRAWAL LAGOS') - unknown counterparty, no confident
+    match
+  proposed_entry:
+    date: '2026-09-17'
+    narration: ATM WITHDRAWAL LAGOS - unknown, route to Suspense
+    postings:
+    - account: Expenses:Travel
+      amount: '1080.00'
+    - account: Assets:Bank:Operating
+      amount: '-1080.00'
+  confidence: '0.20'
+  decided_by: worker
+  trace: neatlogs:7853ef917eac793eb6376cc1283d467f
+  status: approved
+  reviewer_note: 'Identified: Lagos ATM withdrawal by the sales lead on the Nigeria
+    trip. (reclassified Equity:Suspense -> Expenses:Travel)'
+  session_id: closeops-12
+  timestamp: '2026-09-06T11:24:14Z'
+- id: BR-018
+  task: bank-rec
+  source: data/bank/sep-2026.csv#L89
+  description: DISCOUNT 1 PAYMENT
+  kind: partial
+  issue: Line 89 (-6958.00 'DISCOUNT 1 PAYMENT') - partial payment, remainder stays
+    open
+  proposed_entry:
+    date: '2026-09-18'
+    narration: DISCOUNT 1 PAYMENT - partial on AP-0071 (remainder 142.00 open)
+    postings:
+    - account: Liabilities:AP
+      amount: '6958.00'
+      meta:
+        invoice: AP-0071
+    - account: Assets:Bank:Operating
+      amount: '-6958.00'
+  confidence: '0.65'
+  decided_by: worker
+  trace: neatlogs:7853ef917eac793eb6376cc1283d467f
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
+  session_id: closeops-12
+  timestamp: '2026-09-06T11:24:14Z'
+- id: BR-019
+  task: bank-rec
+  source: data/bank/sep-2026.csv#L90
+  description: DODO PAYOUT
+  kind: payout
+  issue: Line 90 (9700.00 'DODO PAYOUT') - processor payout with fee missing from
+    the record
+  proposed_entry:
+    date: '2026-09-18'
+    narration: Dodo payout po_001 (net 9700.00 + fee 300.00)
+    postings:
+    - account: Assets:Bank:Operating
+      amount: '9700.00'
+    - account: Expenses:PaymentProcessing
+      amount: '300.00'
+    - account: Assets:Dodo:Balance
+      amount: '-10000.00'
+  confidence: '0.95'
+  decided_by: worker
+  trace: neatlogs:7853ef917eac793eb6376cc1283d467f
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
+  session_id: closeops-12
+  timestamp: '2026-09-06T11:24:14Z'
+- id: BR-020
+  task: bank-rec
+  source: data/bank/sep-2026.csv#L93
+  description: DISCOUNT 2 PAYMENT
+  kind: partial
+  issue: Line 93 (-7114.80 'DISCOUNT 2 PAYMENT') - partial payment, remainder stays
+    open
+  proposed_entry:
+    date: '2026-09-19'
+    narration: DISCOUNT 2 PAYMENT - partial on AP-0072 (remainder 145.20 open)
+    postings:
+    - account: Liabilities:AP
+      amount: '7114.80'
+      meta:
+        invoice: AP-0072
+    - account: Assets:Bank:Operating
+      amount: '-7114.80'
+  confidence: '0.65'
+  decided_by: worker
+  trace: neatlogs:7853ef917eac793eb6376cc1283d467f
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
+  session_id: closeops-12
+  timestamp: '2026-09-06T11:24:14Z'
+- id: BR-021
+  task: bank-rec
+  source: data/bank/sep-2026.csv#L96
+  description: DISCOUNT 3 PAYMENT
+  kind: partial
+  issue: Line 96 (-7271.60 'DISCOUNT 3 PAYMENT') - partial payment, remainder stays
+    open
+  proposed_entry:
+    date: '2026-09-20'
+    narration: DISCOUNT 3 PAYMENT - partial on AP-0073 (remainder 148.40 open)
+    postings:
+    - account: Liabilities:AP
+      amount: '7271.60'
+      meta:
+        invoice: AP-0073
+    - account: Assets:Bank:Operating
+      amount: '-7271.60'
+  confidence: '0.65'
+  decided_by: worker
+  trace: neatlogs:7853ef917eac793eb6376cc1283d467f
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
+  session_id: closeops-12
+  timestamp: '2026-09-06T11:24:14Z'
+- id: BR-022
+  task: bank-rec
+  source: data/bank/sep-2026.csv#L111
+  description: DODO PAYOUT
+  kind: payout
+  issue: Line 111 (4850.00 'DODO PAYOUT') - processor payout with fee missing from
+    the record
+  proposed_entry:
+    date: '2026-09-25'
+    narration: Dodo payout po_002 (fee missing)
+    postings:
+    - account: Assets:Bank:Operating
+      amount: '4850.00'
+    - account: Assets:Dodo:Balance
+      amount: '-4850.00'
+  confidence: '0.80'
+  decided_by: worker
+  trace: neatlogs:7853ef917eac793eb6376cc1283d467f
+  status: approved
+  reviewer_note: Reviewed and approved by controller.
+  session_id: closeops-12
+  timestamp: '2026-09-06T11:24:14Z'
