@@ -127,6 +127,36 @@ def test_rejects_invented_amounts(candidates, decisions):
                for v in violations)
 
 
+def test_accepts_float_confidence(candidates, decisions):
+    # A worker writes decisions.json, so confidence arrives as a JSON number
+    # (float). Confidence is not money: floats must be accepted here.
+    ok = copy.deepcopy(decisions)
+    for dec in ok["decisions"]:
+        if dec["line"] == 11:
+            dec["confidence"] = 0.98  # a real Python float, as json.load produces
+    assert decide.validate_decisions(candidates, ok) == []
+
+
+def test_rejects_out_of_range_confidence(candidates, decisions):
+    bad = copy.deepcopy(decisions)
+    for dec in bad["decisions"]:
+        if dec["line"] == 11:
+            dec["confidence"] = 1.5
+    violations = decide.validate_decisions(candidates, bad)
+    assert any("11" in v and "confidence" in v.lower() and "range" in v.lower()
+               for v in violations)
+
+
+def test_rejects_non_numeric_confidence(candidates, decisions):
+    bad = copy.deepcopy(decisions)
+    for dec in bad["decisions"]:
+        if dec["line"] == 11:
+            dec["confidence"] = "abc"
+    violations = decide.validate_decisions(candidates, bad)
+    assert any("11" in v and "confidence" in v.lower() and "number" in v.lower()
+               for v in violations)
+
+
 def test_rejects_missing_rationale(candidates, decisions):
     bad = copy.deepcopy(decisions)
     for dec in bad["decisions"]:

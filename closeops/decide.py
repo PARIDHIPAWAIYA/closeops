@@ -49,6 +49,21 @@ def _dec(value) -> Decimal:
     return Decimal(str(value))
 
 
+def _parse_confidence(value):
+    """Parse a confidence into Decimal, or None if it is not a number.
+
+    Confidence is NOT money: a worker writing decisions.json emits a JSON number,
+    so int/float/numeric-string are all fine here. The float ban stays on money
+    fields only (amounts, scores).
+    """
+    if isinstance(value, bool):  # bool is an int subclass; not a confidence
+        return None
+    try:
+        return Decimal(str(value))
+    except (InvalidOperation, TypeError, ValueError):
+        return None
+
+
 def _decisions_list(decisions):
     """Accept either a bare list or an object with a ``decisions`` array."""
     if isinstance(decisions, dict):
@@ -235,13 +250,15 @@ def validate_decisions(candidates, decisions, suspense_account=DEFAULT_SUSPENSE)
         if not d.get("rationale") or not str(d.get("rationale")).strip():
             violations.append(f"line {n}: missing 'rationale'")
         conf = d.get("confidence")
-        if conf is None or str(conf).strip() == "":
+        if conf is None or (isinstance(conf, str) and not conf.strip()):
             violations.append(f"line {n}: missing 'confidence'")
         else:
-            try:
-                _dec(conf)
-            except (InvalidOperation, TypeError):
+            parsed = _parse_confidence(conf)
+            if parsed is None:
                 violations.append(f"line {n}: confidence is not a number: {conf!r}")
+            elif not (Decimal("0") <= parsed <= Decimal("1")):
+                violations.append(
+                    f"line {n}: confidence out of range [0, 1]: {conf!r}")
 
         if choice is None or choice == "exception":
             continue
