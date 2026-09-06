@@ -11,6 +11,16 @@
     invoice: "AP-0001"
   Assets:Bank:Operating  -500.00 USD
 
+2026-09-02 * "GUSTO PAYROLL" "GUSTO PAYROLL - rule GUSTO"
+  source: "data/bank/sep-2026.csv#L5"
+  task: "bank-rec"
+  confidence: "0.90"
+  decided_by: "worker"
+  trace: "neatlogs:7853ef917eac793eb6376cc1283d467f"
+  approved-by: "controller"
+  Expenses:Payroll:Salaries  12500.00 USD
+  Assets:Bank:Operating  -12500.00 USD
+
 2026-09-02 * "PAGERDUTY PAYMENT" "PAGERDUTY PAYMENT - pays AP-0053"
   source: "data/bank/sep-2026.csv#L4"
   task: "bank-rec"
@@ -204,6 +214,19 @@
   Expenses:BankFees  45.00 USD
   Assets:Bank:Operating  -45.00 USD
 
+2026-09-06 * "SPLITCO 1 PAYMENT" "SPLITCO 1 PAYMENT - split across 2 bills"
+  source: "data/bank/sep-2026.csv#L25"
+  task: "bank-rec"
+  confidence: "0.70"
+  decided_by: "worker"
+  trace: "neatlogs:7853ef917eac793eb6376cc1283d467f"
+  approved-by: "controller"
+  Liabilities:AP  4100.00 USD
+    invoice: "AP-0054"
+  Liabilities:AP  2050.00 USD
+    invoice: "AP-0055"
+  Assets:Bank:Operating  -6150.00 USD
+
 2026-09-06 * "STARK INDS PAYMENT" "STARK INDS PAYMENT - pays AP-0005"
   source: "data/bank/sep-2026.csv#L20"
   task: "bank-rec"
@@ -251,6 +274,19 @@
   trace: "neatlogs:7853ef917eac793eb6376cc1283d467f"
   Expenses:Software  180.00 USD
   Assets:Bank:Operating  -180.00 USD
+
+2026-09-07 * "SPLITCO 2 PAYMENT" "SPLITCO 2 PAYMENT - split across 2 bills"
+  source: "data/bank/sep-2026.csv#L31"
+  task: "bank-rec"
+  confidence: "0.70"
+  decided_by: "worker"
+  trace: "neatlogs:7853ef917eac793eb6376cc1283d467f"
+  approved-by: "controller"
+  Liabilities:AP  4220.00 USD
+    invoice: "AP-0056"
+  Liabilities:AP  2125.00 USD
+    invoice: "AP-0057"
+  Assets:Bank:Operating  -6345.00 USD
 
 2026-09-07 * "WAYNE ENT PAYMENT" "WAYNE ENT PAYMENT - pays AP-0006"
   source: "data/bank/sep-2026.csv#L26"
@@ -301,6 +337,19 @@
     invoice: "AP-0033"
   Assets:Bank:Operating  -2532.00 USD
 
+2026-09-08 * "SPLITCO 3 PAYMENT" "SPLITCO 3 PAYMENT - split across 2 bills"
+  source: "data/bank/sep-2026.csv#L36"
+  task: "bank-rec"
+  confidence: "0.70"
+  decided_by: "worker"
+  trace: "neatlogs:7853ef917eac793eb6376cc1283d467f"
+  approved-by: "controller"
+  Liabilities:AP  4340.00 USD
+    invoice: "AP-0058"
+  Liabilities:AP  2200.00 USD
+    invoice: "AP-0059"
+  Assets:Bank:Operating  -6540.00 USD
+
 2026-09-09 * "ADOBE PAYMENT" "ADOBE PAYMENT - pays AP-0034"
   source: "data/bank/sep-2026.csv#L38"
   task: "bank-rec"
@@ -329,6 +378,30 @@
   trace: "neatlogs:7853ef917eac793eb6376cc1283d467f"
   Expenses:Software  330.00 USD
   Assets:Bank:Operating  -330.00 USD
+
+2026-09-09 * "PARTIAL 1 PAYMENT" "PARTIAL 1 PAYMENT - partial on AP-0064 (remainder 2080.00 open)"
+  source: "data/bank/sep-2026.csv#L42"
+  task: "bank-rec"
+  confidence: "0.65"
+  decided_by: "worker"
+  trace: "neatlogs:7853ef917eac793eb6376cc1283d467f"
+  approved-by: "controller"
+  Liabilities:AP  3120.00 USD
+    invoice: "AP-0064"
+  Assets:Bank:Operating  -3120.00 USD
+
+2026-09-09 * "SPLITCO 4 PAYMENT" "SPLITCO 4 PAYMENT - split across 2 bills"
+  source: "data/bank/sep-2026.csv#L41"
+  task: "bank-rec"
+  confidence: "0.70"
+  decided_by: "worker"
+  trace: "neatlogs:7853ef917eac793eb6376cc1283d467f"
+  approved-by: "controller"
+  Liabilities:AP  4460.00 USD
+    invoice: "AP-0060"
+  Liabilities:AP  2275.00 USD
+    invoice: "AP-0061"
+  Assets:Bank:Operating  -6735.00 USD
 
 2026-09-09 * "VANDELAY PAYMENT" "VANDELAY PAYMENT - pays AP-0008"
   source: "data/bank/sep-2026.csv#L37"
@@ -369,6 +442,17 @@
   Expenses:Software  360.00 USD
   Assets:Bank:Operating  -360.00 USD
 
+2026-09-10 * "PARTIAL 2 PAYMENT" "PARTIAL 2 PAYMENT - partial on AP-0065 (remainder 2136.00 open)"
+  source: "data/bank/sep-2026.csv#L48"
+  task: "bank-rec"
+  confidence: "0.65"
+  decided_by: "worker"
+  trace: "neatlogs:7853ef917eac793eb6376cc1283d467f"
+  approved-by: "controller"
+  Liabilities:AP  3204.00 USD
+    invoice: "AP-0065"
+  Assets:Bank:Operating  -3204.00 USD
+
 2026-09-10 * "SOYLENT PAYMENT" "SOYLENT PAYMENT - pays AP-0009"
   source: "data/bank/sep-2026.csv#L43"
   task: "bank-rec"
@@ -378,6 +462,19 @@
   Liabilities:AP  1008.00 USD
     invoice: "AP-0009"
   Assets:Bank:Operating  -1008.00 USD
+
+2026-09-10 * "SPLITCO 5 PAYMENT" "SPLITCO 5 PAYMENT - split across 2 bills"
+  source: "data/bank/sep-2026.csv#L47"
+  task: "bank-rec"
+  confidence: "0.70"
+  decided_by: "worker"
+  trace: "neatlogs:7853ef917eac793eb6376cc1283d467f"
+  approved-by: "controller"
+  Liabilities:AP  4580.00 USD
+    invoice: "AP-0062"
+  Liabilities:AP  2350.00 USD
+    invoice: "AP-0063"
+  Assets:Bank:Operating  -6930.00 USD
 
 2026-09-11 * "CYBERDYNE PAYMENT" "CYBERDYNE PAYMENT - pays AP-0010"
   source: "data/bank/sep-2026.csv#L49"
@@ -408,6 +505,17 @@
   Expenses:Software  390.00 USD
   Assets:Bank:Operating  -390.00 USD
 
+2026-09-11 * "PARTIAL 3 PAYMENT" "PARTIAL 3 PAYMENT - partial on AP-0066 (remainder 2192.00 open)"
+  source: "data/bank/sep-2026.csv#L53"
+  task: "bank-rec"
+  confidence: "0.65"
+  decided_by: "worker"
+  trace: "neatlogs:7853ef917eac793eb6376cc1283d467f"
+  approved-by: "controller"
+  Liabilities:AP  3288.00 USD
+    invoice: "AP-0066"
+  Assets:Bank:Operating  -3288.00 USD
+
 2026-09-11 * "TWILIO PAYMENT" "TWILIO PAYMENT - pays AP-0036"
   source: "data/bank/sep-2026.csv#L50"
   task: "bank-rec"
@@ -427,6 +535,29 @@
   Assets:Bank:Operating  2595.00 USD
   Assets:AR  -2595.00 USD
     invoice: "AR-0010"
+
+2026-09-12 * "EUROVEND 1 EUR PAYMENT" "EUROVEND 1 EUR PAYMENT - AP-0068 + FX/rounding"
+  source: "data/bank/sep-2026.csv#L59"
+  task: "bank-rec"
+  confidence: "0.80"
+  decided_by: "worker"
+  trace: "neatlogs:7853ef917eac793eb6376cc1283d467f"
+  approved-by: "controller"
+  Liabilities:AP  6100.00 USD
+    invoice: "AP-0068"
+  Expenses:FX  48.80 USD
+  Assets:Bank:Operating  -6148.80 USD
+
+2026-09-12 * "PARTIAL 4 PAYMENT" "PARTIAL 4 PAYMENT - partial on AP-0067 (remainder 2248.00 open)"
+  source: "data/bank/sep-2026.csv#L58"
+  task: "bank-rec"
+  confidence: "0.65"
+  decided_by: "worker"
+  trace: "neatlogs:7853ef917eac793eb6376cc1283d467f"
+  approved-by: "controller"
+  Liabilities:AP  3372.00 USD
+    invoice: "AP-0067"
+  Assets:Bank:Operating  -3372.00 USD
 
 2026-09-12 * "SEGMENT PAYMENT" "SEGMENT PAYMENT - pays AP-0037"
   source: "data/bank/sep-2026.csv#L55"
@@ -477,6 +608,18 @@
   Assets:AR  -2750.00 USD
     invoice: "AR-0011"
 
+2026-09-13 * "EUROVEND 2 EUR PAYMENT" "EUROVEND 2 EUR PAYMENT - AP-0069 + FX/rounding"
+  source: "data/bank/sep-2026.csv#L64"
+  task: "bank-rec"
+  confidence: "0.80"
+  decided_by: "worker"
+  trace: "neatlogs:7853ef917eac793eb6376cc1283d467f"
+  approved-by: "controller"
+  Liabilities:AP  6310.00 USD
+    invoice: "AP-0069"
+  Expenses:FX  50.48 USD
+  Assets:Bank:Operating  -6360.48 USD
+
 2026-09-13 * "FIGMA SUBSCRIPTION" "FIGMA SUBSCRIPTION - rule GITHUB|NOTION|SLACK|ZOOM|FIGMA"
   source: "data/bank/sep-2026.csv#L63"
   task: "bank-rec"
@@ -505,6 +648,18 @@
   Assets:Bank:Operating  2905.00 USD
   Assets:AR  -2905.00 USD
     invoice: "AR-0012"
+
+2026-09-14 * "EUROVEND 3 EUR PAYMENT" "EUROVEND 3 EUR PAYMENT - AP-0070 + FX/rounding"
+  source: "data/bank/sep-2026.csv#L69"
+  task: "bank-rec"
+  confidence: "0.80"
+  decided_by: "worker"
+  trace: "neatlogs:7853ef917eac793eb6376cc1283d467f"
+  approved-by: "controller"
+  Liabilities:AP  6520.00 USD
+    invoice: "AP-0070"
+  Expenses:FX  52.16 USD
+  Assets:Bank:Operating  -6572.16 USD
 
 2026-09-14 * "GITHUB SUBSCRIPTION" "GITHUB SUBSCRIPTION - rule GITHUB|NOTION|SLACK|ZOOM|FIGMA"
   source: "data/bank/sep-2026.csv#L68"
@@ -542,6 +697,16 @@
   decided_by: "worker"
   trace: "neatlogs:7853ef917eac793eb6376cc1283d467f"
   Expenses:Software  499.00 USD
+  Assets:Bank:Operating  -499.00 USD
+
+2026-09-14 * "ZOOM VIDEO" "ZOOM VIDEO - rule GITHUB|NOTION|SLACK|ZOOM|FIGMA"
+  source: "data/bank/sep-2026.csv#L71"
+  task: "bank-rec"
+  confidence: "0.40"
+  decided_by: "worker"
+  trace: "neatlogs:7853ef917eac793eb6376cc1283d467f"
+  approved-by: "controller"
+  Assets:AR  499.00 USD
   Assets:Bank:Operating  -499.00 USD
 
 2026-09-15 * "DEPOSIT APEX" "DEPOSIT APEX - collects AR-0013"
@@ -583,6 +748,16 @@
     invoice: "AP-0040"
   Assets:Bank:Operating  -2976.50 USD
 
+2026-09-15 * "POS 4471 SHENZHEN" "POS 4471 SHENZHEN - unknown, route to Suspense"
+  source: "data/bank/sep-2026.csv#L76"
+  task: "bank-rec"
+  confidence: "0.20"
+  decided_by: "worker"
+  trace: "neatlogs:7853ef917eac793eb6376cc1283d467f"
+  approved-by: "controller"
+  Expenses:Office  820.00 USD
+  Assets:Bank:Operating  -820.00 USD
+
 2026-09-16 * "BLUTH CO PAYMENT" "BLUTH CO PAYMENT - pays AP-0015"
   source: "data/bank/sep-2026.csv#L77"
   task: "bank-rec"
@@ -613,6 +788,16 @@
   Assets:AR  -3215.00 USD
     invoice: "AR-0014"
 
+2026-09-16 * "POS 8823 SHENZHEN" "POS 8823 SHENZHEN - unknown, route to Suspense"
+  source: "data/bank/sep-2026.csv#L81"
+  task: "bank-rec"
+  confidence: "0.20"
+  decided_by: "worker"
+  trace: "neatlogs:7853ef917eac793eb6376cc1283d467f"
+  approved-by: "controller"
+  Expenses:Office  950.00 USD
+  Assets:Bank:Operating  -950.00 USD
+
 2026-09-16 * "SLACK SUBSCRIPTION" "SLACK SUBSCRIPTION - rule GITHUB|NOTION|SLACK|ZOOM|FIGMA"
   source: "data/bank/sep-2026.csv#L80"
   task: "bank-rec"
@@ -621,6 +806,16 @@
   trace: "neatlogs:7853ef917eac793eb6376cc1283d467f"
   Expenses:Software  540.00 USD
   Assets:Bank:Operating  -540.00 USD
+
+2026-09-17 * "ATM WITHDRAWAL LAGOS" "ATM WITHDRAWAL LAGOS - unknown, route to Suspense"
+  source: "data/bank/sep-2026.csv#L86"
+  task: "bank-rec"
+  confidence: "0.20"
+  decided_by: "worker"
+  trace: "neatlogs:7853ef917eac793eb6376cc1283d467f"
+  approved-by: "controller"
+  Expenses:Travel  1080.00 USD
+  Assets:Bank:Operating  -1080.00 USD
 
 2026-09-17 * "DEPOSIT NOVA GRP" "DEPOSIT NOVA GRP - collects AR-0015"
   source: "data/bank/sep-2026.csv#L84"
@@ -661,6 +856,28 @@
     invoice: "AP-0042"
   Assets:Bank:Operating  -3103.50 USD
 
+2026-09-18 * "DISCOUNT 1 PAYMENT" "DISCOUNT 1 PAYMENT - partial on AP-0071 (remainder 142.00 open)"
+  source: "data/bank/sep-2026.csv#L89"
+  task: "bank-rec"
+  confidence: "0.65"
+  decided_by: "worker"
+  trace: "neatlogs:7853ef917eac793eb6376cc1283d467f"
+  approved-by: "controller"
+  Liabilities:AP  6958.00 USD
+    invoice: "AP-0071"
+  Assets:Bank:Operating  -6958.00 USD
+
+2026-09-18 * "DODO PAYOUT" "Dodo payout po_001 (net 9700.00 + fee 300.00)"
+  source: "data/bank/sep-2026.csv#L90"
+  task: "bank-rec"
+  confidence: "0.95"
+  decided_by: "worker"
+  trace: "neatlogs:7853ef917eac793eb6376cc1283d467f"
+  approved-by: "controller"
+  Assets:Bank:Operating  9700.00 USD
+  Expenses:PaymentProcessing  300.00 USD
+  Assets:Dodo:Balance  -10000.00 USD
+
 2026-09-18 * "PRESTIGE WW PAYMENT" "PRESTIGE WW PAYMENT - pays AP-0017"
   source: "data/bank/sep-2026.csv#L87"
   task: "bank-rec"
@@ -681,6 +898,17 @@
     invoice: "AP-0043"
   Assets:Bank:Operating  -3167.00 USD
 
+2026-09-19 * "DISCOUNT 2 PAYMENT" "DISCOUNT 2 PAYMENT - partial on AP-0072 (remainder 145.20 open)"
+  source: "data/bank/sep-2026.csv#L93"
+  task: "bank-rec"
+  confidence: "0.65"
+  decided_by: "worker"
+  trace: "neatlogs:7853ef917eac793eb6376cc1283d467f"
+  approved-by: "controller"
+  Liabilities:AP  7114.80 USD
+    invoice: "AP-0072"
+  Assets:Bank:Operating  -7114.80 USD
+
 2026-09-19 * "HUBSPOT PAYMENT" "HUBSPOT PAYMENT - pays AP-0044"
   source: "data/bank/sep-2026.csv#L92"
   task: "bank-rec"
@@ -700,6 +928,17 @@
   Liabilities:AP  1579.50 USD
     invoice: "AP-0018"
   Assets:Bank:Operating  -1579.50 USD
+
+2026-09-20 * "DISCOUNT 3 PAYMENT" "DISCOUNT 3 PAYMENT - partial on AP-0073 (remainder 148.40 open)"
+  source: "data/bank/sep-2026.csv#L96"
+  task: "bank-rec"
+  confidence: "0.65"
+  decided_by: "worker"
+  trace: "neatlogs:7853ef917eac793eb6376cc1283d467f"
+  approved-by: "controller"
+  Liabilities:AP  7271.60 USD
+    invoice: "AP-0073"
+  Assets:Bank:Operating  -7271.60 USD
 
 2026-09-20 * "LEGAL EAGLE LLP PAYMENT" "LEGAL EAGLE LLP PAYMENT - pays AP-0074"
   source: "data/bank/sep-2026.csv#L97"
@@ -850,6 +1089,16 @@
   Liabilities:AP  1960.50 USD
     invoice: "AP-0024"
   Assets:Bank:Operating  -1960.50 USD
+
+2026-09-25 * "DODO PAYOUT" "Dodo payout po_002 (fee missing)"
+  source: "data/bank/sep-2026.csv#L111"
+  task: "bank-rec"
+  confidence: "0.80"
+  decided_by: "worker"
+  trace: "neatlogs:7853ef917eac793eb6376cc1283d467f"
+  approved-by: "controller"
+  Assets:Bank:Operating  4850.00 USD
+  Assets:Dodo:Balance  -4850.00 USD
 
 2026-09-25 * "LOOM PAYMENT" "LOOM PAYMENT - pays AP-0050"
   source: "data/bank/sep-2026.csv#L110"
