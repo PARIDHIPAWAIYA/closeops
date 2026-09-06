@@ -1,0 +1,169 @@
+<title>Northwind September Close</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bitter:wght@600;700&family=Public+Sans:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;700&display=swap">
+<style>
+:root {
+  --paper:#EDF0F3; --panel:#FFFFFF; --panel-2:#F5F7F9; --ink:#18222D; --ink-2:#4A5866;
+  --ink-3:#7A8896; --rule:#D2D9E0; --seal:#0F6E4F; --seal-soft:#DCEDE5; --bar:#5C7C99;
+  --amber:#9A6014; --amber-soft:#F6E9D6; --red:#A32B2B; --red-soft:#F5DEDE; --shadow:0 1px 2px rgba(24,34,45,.07);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper:#0D1218; --panel:#151D25; --panel-2:#1B242D; --ink:#E3EAF1; --ink-2:#A9B6C3;
+    --ink-3:#76838F; --rule:#2A3540; --seal:#4FBF92; --seal-soft:#123125; --bar:#6F91AE;
+    --amber:#D9973F; --amber-soft:#37280F; --red:#E07070; --red-soft:#3A1A1A; --shadow:0 1px 3px rgba(0,0,0,.5);
+  }
+}
+:root[data-theme="dark"] {
+  --paper:#0D1218; --panel:#151D25; --panel-2:#1B242D; --ink:#E3EAF1; --ink-2:#A9B6C3;
+  --ink-3:#76838F; --rule:#2A3540; --seal:#4FBF92; --seal-soft:#123125; --bar:#6F91AE;
+  --amber:#D9973F; --amber-soft:#37280F; --red:#E07070; --red-soft:#3A1A1A; --shadow:0 1px 3px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Public Sans",system-ui,sans-serif;font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.mono,code{font-family:"Roboto Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.wrap{max-width:1020px;margin:0 auto;padding:32px 20px 80px}
+header.doc{border-bottom:2px solid var(--ink);padding-bottom:18px;margin-bottom:6px}
+.kicker{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+h1{font-family:Bitter,Georgia,serif;font-weight:700;font-size:34px;line-height:1.1;margin:6px 0 4px;letter-spacing:-.01em}
+.sub{color:var(--ink-2);font-size:14px}
+.sealrow{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;margin-top:16px}
+.seal{display:inline-flex;align-items:center;gap:10px;border:2px solid var(--seal);color:var(--seal);border-radius:4px;padding:8px 14px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:13px;background:var(--seal-soft)}
+.seal.bad{border-color:var(--red);color:var(--red);background:var(--red-soft)}
+.seal .big{font-family:"Roboto Mono",monospace;font-size:19px;font-variant-numeric:tabular-nums}
+.meta{display:flex;gap:22px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-2)}
+.meta b{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);font-weight:600}
+h2{font-family:Bitter,Georgia,serif;font-size:20px;font-weight:600;margin:38px 0 10px;letter-spacing:-.005em}
+h2 .n{font-family:"Roboto Mono",monospace;font-size:12px;color:var(--ink-3);margin-right:8px;font-weight:400}
+p.lede{color:var(--ink-2);margin:0 0 14px;max-width:70ch;font-size:14px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:0;border:1px solid var(--rule);border-radius:5px;overflow:hidden;background:var(--panel);box-shadow:var(--shadow);margin:16px 0 4px}
+.tiles>div{padding:12px 14px;border-right:1px solid var(--rule)}
+.tiles>div:last-child{border-right:0}
+.tiles .k{font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-3);font-weight:600}
+.tiles .v{font-family:"Roboto Mono",monospace;font-size:21px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.3}
+.tiles .n{font-size:11.5px;color:var(--ink-2)}
+.tbl{border:1px solid var(--rule);border-radius:5px;overflow-x:auto;background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{background:var(--panel-2);text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);padding:8px 11px;border-bottom:1px solid var(--rule);font-weight:600;white-space:nowrap}
+td{padding:8px 11px;border-bottom:1px solid var(--rule);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td.cid{font-weight:700;color:var(--ink-2);width:44px}
+td.num{text-align:right;white-space:nowrap}
+td.st{white-space:nowrap}
+td.detail{color:var(--ink-2);font-size:12px}
+td.kind{white-space:nowrap;font-size:12.5px}
+td.trace{font-size:11.5px;color:var(--ink-3)}
+.chip-pass,.chip-fail,.chip-app,.chip-recl{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:3px}
+.chip-pass{background:var(--seal-soft);color:var(--seal)}
+.chip-fail{background:var(--red-soft);color:var(--red)}
+.chip-app{background:var(--seal-soft);color:var(--seal)}
+.chip-recl{background:var(--amber-soft);color:var(--amber);margin-left:5px}
+figure{margin:14px 0 6px}
+figure svg{max-width:100%;height:auto;color:var(--ink)}
+figcaption{font-size:12.5px;color:var(--ink-2);margin-top:6px;max-width:70ch}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px;margin-top:16px}
+.card{border:1px solid var(--rule);border-radius:5px;background:var(--panel);padding:14px 16px;box-shadow:var(--shadow)}
+.card h3{margin:0 0 8px;font-size:13.5px;font-weight:700}
+.card ul{list-style:none;margin:0;padding:0;font-size:13px}
+.card li{display:flex;align-items:baseline;gap:8px;padding:4px 0;border-bottom:1px dotted var(--rule)}
+.card li:last-child{border-bottom:0}
+.card li .k{flex:1}
+.card li .v{font-weight:700;font-variant-numeric:tabular-nums}
+.card li .arrow{color:var(--ink-3)}
+.card li.empty{color:var(--ink-3)}
+.delta{display:flex;align-items:baseline;gap:12px;margin-top:6px}
+.delta .a,.delta .b{font-family:"Roboto Mono",monospace;font-size:26px;font-weight:700;font-variant-numeric:tabular-nums}
+.delta .a{color:var(--ink-3)}
+.delta .b{color:var(--seal)}
+.delta .g{color:var(--ink-3);font-size:20px}
+.delta .note{font-size:12.5px;color:var(--ink-2)}
+.callout{border-left:3px solid var(--amber);background:var(--panel);padding:11px 15px;border-radius:0 4px 4px 0;margin:16px 0;font-size:13.5px;box-shadow:var(--shadow)}
+.callout b{color:var(--amber)}
+footer{margin-top:44px;padding-top:14px;border-top:1px solid var(--rule);font-size:12px;color:var(--ink-3)}
+footer a{color:var(--seal)}
+@media (max-width:640px){h1{font-size:26px}.wrap{padding:20px 14px 60px}}
+</style>
+
+<div class="wrap">
+<header class="doc">
+  <div class="kicker">Close package · period 2026-09 · generated 06 Sep 2026 15:00 UTC</div>
+  <h1>Northwind Labs Inc.</h1>
+  <div class="sub">Month-end close executed as reviewed pull requests. Every entry carries its source
+  document, a confidence, and a trace id; every control below ran in CI before the entries merged.</div>
+  <div class="sealrow">
+    <div class="seal"><span class="big">10/10</span> controls passed</div>
+    <div class="meta">
+      <div><b>Materiality</b>USD 10000.00</div>
+      <div><b>Period lock</b>before 2026-09-01</div>
+      <div><b>Exceptions</b>23 raised · 0 open</div>
+      <div><b>Trace</b>1 decide run</div>
+    </div>
+  </div>
+</header>
+
+<div class="tiles">
+  <div><div class="k">Statement lines</div><div class="v">116</div><div class="n">September bank export</div></div>
+  <div><div class="k">Auto-posted</div><div class="v">94</div><div class="n">bank-rec entries at ≥0.90</div></div>
+  <div><div class="k">Sent to a human</div><div class="v">23</div><div class="n">with a proposed entry</div></div>
+  <div><div class="k">Reconciling items</div><div class="v">4</div><div class="n">3 cheques · 1 in transit</div></div>
+</div>
+
+<h2><span class="n">§1</span>Control register</h2>
+<p class="lede">These ten controls run in GitHub Actions on every pull request that touches the ledger and
+post their result as a PR comment. A control that cannot evaluate reports <em>fail</em>, never pass.</p>
+<div class="tbl"><table>
+<thead><tr><th>#</th><th>Control</th><th>Result</th><th>Detail</th></tr></thead>
+<tbody><tr><td class="mono cid">C1</td><td>Ledger parses and balances</td><td class="st"><span class=chip-pass>pass</span></td><td class="detail"></td></tr><tr><td class="mono cid">C2</td><td>Trial balance nets to zero</td><td class="st"><span class=chip-pass>pass</span></td><td class="detail"></td></tr><tr><td class="mono cid">C3</td><td>Period lock</td><td class="st"><span class=chip-pass>pass</span></td><td class="detail"></td></tr><tr><td class="mono cid">C4</td><td>Non-empty source</td><td class="st"><span class=chip-pass>pass</span></td><td class="detail"></td></tr><tr><td class="mono cid">C5</td><td>Materiality approved</td><td class="st"><span class=chip-pass>pass</span></td><td class="detail"></td></tr><tr><td class="mono cid">C6</td><td>No duplicates</td><td class="st"><span class=chip-pass>pass</span></td><td class="detail"></td></tr><tr><td class="mono cid">C7</td><td>Bank reconciles</td><td class="st"><span class=chip-pass>pass</span></td><td class="detail"></td></tr><tr><td class="mono cid">C8</td><td>Suspense is zero</td><td class="st"><span class=chip-pass>pass</span></td><td class="detail"></td></tr><tr><td class="mono cid">C9</td><td>No open exceptions</td><td class="st"><span class=chip-pass>pass</span></td><td class="detail"></td></tr><tr><td class="mono cid">C10</td><td>Dodo balance</td><td class="st"><span class=chip-pass>pass</span></td><td class="detail"></td></tr></tbody>
+</table></div>
+
+<h2><span class="n">§2</span>What the agent actually adds</h2>
+<figure><svg viewBox="0 0 760 230" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="Auto-post rate by tier: exact match 60.3%, plus rules 79.3%, plus agent judgment 81.0%, plus controller review 100.0%." font-family="Public Sans, system-ui, sans-serif"><line x1="250.0" y1="18" x2="250.0" y2="202" stroke="currentColor" stroke-width="1" opacity=".16"/><text x="250.0" y="12" font-size="10.5" text-anchor="middle" fill="currentColor" opacity=".55">0%</text><line x1="360.0" y1="18" x2="360.0" y2="202" stroke="currentColor" stroke-width="1" opacity=".16"/><text x="360.0" y="12" font-size="10.5" text-anchor="middle" fill="currentColor" opacity=".55">25%</text><line x1="470.0" y1="18" x2="470.0" y2="202" stroke="currentColor" stroke-width="1" opacity=".16"/><text x="470.0" y="12" font-size="10.5" text-anchor="middle" fill="currentColor" opacity=".55">50%</text><line x1="580.0" y1="18" x2="580.0" y2="202" stroke="currentColor" stroke-width="1" opacity=".16"/><text x="580.0" y="12" font-size="10.5" text-anchor="middle" fill="currentColor" opacity=".55">75%</text><line x1="690.0" y1="18" x2="690.0" y2="202" stroke="currentColor" stroke-width="1" opacity=".16"/><text x="690.0" y="12" font-size="10.5" text-anchor="middle" fill="currentColor" opacity=".55">100%</text><text x="0" y="34" font-size="12.5" font-weight="600" fill="currentColor">Exact amount match</text><text x="0" y="49" font-size="10.5" fill="currentColor" opacity=".6">amount within 5 days, nothing else</text><rect x="250" y="21" width="440" height="19" rx="2" fill="currentColor" opacity=".07"/><rect x="250" y="21" width="265.3" height="19" rx="2" fill="var(--bar)"/><text x="700" y="35" font-size="12.5" font-weight="700" font-family="Roboto Mono, monospace" fill="currentColor">60.3%</text><text x="0" y="80" font-size="12.5" font-weight="600" fill="currentColor">+ deterministic rules</text><text x="0" y="95" font-size="10.5" fill="currentColor" opacity=".6">payee rules, splits, payouts</text><rect x="250" y="67" width="440" height="19" rx="2" fill="currentColor" opacity=".07"/><rect x="250" y="67" width="348.9" height="19" rx="2" fill="var(--bar)"/><text x="700" y="81" font-size="12.5" font-weight="700" font-family="Roboto Mono, monospace" fill="currentColor">79.3%</text><text x="0" y="126" font-size="12.5" font-weight="600" fill="currentColor">+ agent judgment</text><text x="0" y="141" font-size="10.5" fill="currentColor" opacity=".6">under the decision contract</text><rect x="250" y="113" width="440" height="19" rx="2" fill="currentColor" opacity=".07"/><rect x="250" y="113" width="356.4" height="19" rx="2" fill="var(--bar)"/><text x="700" y="127" font-size="12.5" font-weight="700" font-family="Roboto Mono, monospace" fill="currentColor">81.0%</text><text x="0" y="172" font-size="12.5" font-weight="600" fill="currentColor">+ controller review</text><text x="0" y="187" font-size="10.5" fill="currentColor" opacity=".6">23 exceptions resolved</text><rect x="250" y="159" width="440" height="19" rx="2" fill="currentColor" opacity=".07"/><rect x="250" y="159" width="440.0" height="19" rx="2" fill="var(--seal)"/><text x="700" y="173" font-size="12.5" font-weight="700" font-family="Roboto Mono, monospace" fill="currentColor">100.0%</text></svg>
+<figcaption>Auto-post rate by tier on the same 116 statement lines. The agent's own contribution is the
+step from deterministic rules to agent judgment — and the fact that the remaining lines arrive as
+proposed entries with evidence, not as a list of unmatched rows.</figcaption>
+</figure>
+
+<div class="cols">
+  <div class="card">
+    <h3>Improvement between runs</h3>
+    <div class="delta">
+      <span class="a">81.0%</span><span class="g">→</span><span class="b">83.6%</span>
+    </div>
+    <div class="delta"><span class="note">Run 1 94/116 · run 2 97/116 after learning
+    from the controller's approvals — +2.6 points.</span></div>
+  </div>
+  <div class="card">
+    <h3>Rules learned from the human</h3>
+    <ul><li><span class="k mono">SHENZHEN</span><span class="arrow">→</span><span class="k">Expenses:Office</span><span class="v mono">BR-015</span></li><li><span class="k mono">LAGOS</span><span class="arrow">→</span><span class="k">Expenses:Travel</span><span class="v mono">BR-017</span></li></ul>
+  </div>
+  <div class="card">
+    <h3>Why each line needed a person</h3>
+    <ul><li><span class="k">Partial payment</span><span class="v mono">7</span></li><li><span class="k">Split payment</span><span class="v mono">5</span></li><li><span class="k">FX difference</span><span class="v mono">3</span></li><li><span class="k">Unknown payee</span><span class="v mono">3</span></li><li><span class="k">Processor payout</span><span class="v mono">2</span></li><li><span class="k">Rule match</span><span class="v mono">1</span></li><li><span class="k">Possible duplicate</span><span class="v mono">1</span></li></ul>
+  </div>
+</div>
+
+<h2><span class="n">§3</span>Exception register</h2>
+<p class="lede">Each exception is a proposed journal entry the agent would not post on its own authority.
+The controller approved all 23, overruling the agent's proposed account on 4.</p>
+<div class="callout"><b>The review was load-bearing.</b> Approving every exception exactly as proposed would
+have left <span class="mono">Equity:Suspense</span> holding 2,850.00 and failed control C8. The duplicate
+card charge was moved to a receivable rather than booked as a second expense.</div>
+<div class="tbl"><table>
+<thead><tr><th>ID</th><th>Line</th><th>Why</th><th>Conf.</th><th>Status</th><th>Controller note</th><th>Trace</th></tr></thead>
+<tbody><tr><td class="mono">BR-001</td><td>GUSTO PAYROLL</td><td class="kind">Rule match</td><td class="num mono">0.90</td><td class="st"><span class="chip-app">approved</span></td><td class="detail">Reviewed and approved by controller.</td><td class="mono trace">7853ef91…</td></tr><tr><td class="mono">BR-002</td><td>SPLITCO 1 PAYMENT</td><td class="kind">Split payment</td><td class="num mono">0.70</td><td class="st"><span class="chip-app">approved</span></td><td class="detail">Reviewed and approved by controller.</td><td class="mono trace">7853ef91…</td></tr><tr><td class="mono">BR-003</td><td>SPLITCO 2 PAYMENT</td><td class="kind">Split payment</td><td class="num mono">0.70</td><td class="st"><span class="chip-app">approved</span></td><td class="detail">Reviewed and approved by controller.</td><td class="mono trace">7853ef91…</td></tr><tr><td class="mono">BR-004</td><td>SPLITCO 3 PAYMENT</td><td class="kind">Split payment</td><td class="num mono">0.70</td><td class="st"><span class="chip-app">approved</span></td><td class="detail">Reviewed and approved by controller.</td><td class="mono trace">7853ef91…</td></tr><tr><td class="mono">BR-005</td><td>SPLITCO 4 PAYMENT</td><td class="kind">Split payment</td><td class="num mono">0.70</td><td class="st"><span class="chip-app">approved</span></td><td class="detail">Reviewed and approved by controller.</td><td class="mono trace">7853ef91…</td></tr><tr><td class="mono">BR-006</td><td>PARTIAL 1 PAYMENT</td><td class="kind">Partial payment</td><td class="num mono">0.65</td><td class="st"><span class="chip-app">approved</span></td><td class="detail">Reviewed and approved by controller.</td><td class="mono trace">7853ef91…</td></tr><tr><td class="mono">BR-007</td><td>SPLITCO 5 PAYMENT</td><td class="kind">Split payment</td><td class="num mono">0.70</td><td class="st"><span class="chip-app">approved</span></td><td class="detail">Reviewed and approved by controller.</td><td class="mono trace">7853ef91…</td></tr><tr><td class="mono">BR-008</td><td>PARTIAL 2 PAYMENT</td><td class="kind">Partial payment</td><td class="num mono">0.65</td><td class="st"><span class="chip-app">approved</span></td><td class="detail">Reviewed and approved by controller.</td><td class="mono trace">7853ef91…</td></tr><tr><td class="mono">BR-009</td><td>PARTIAL 3 PAYMENT</td><td class="kind">Partial payment</td><td class="num mono">0.65</td><td class="st"><span class="chip-app">approved</span></td><td class="detail">Reviewed and approved by controller.</td><td class="mono trace">7853ef91…</td></tr><tr><td class="mono">BR-010</td><td>PARTIAL 4 PAYMENT</td><td class="kind">Partial payment</td><td class="num mono">0.65</td><td class="st"><span class="chip-app">approved</span></td><td class="detail">Reviewed and approved by controller.</td><td class="mono trace">7853ef91…</td></tr><tr><td class="mono">BR-011</td><td>EUROVEND 1 EUR PAYMENT</td><td class="kind">FX difference</td><td class="num mono">0.80</td><td class="st"><span class="chip-app">approved</span></td><td class="detail">Reviewed and approved by controller.</td><td class="mono trace">7853ef91…</td></tr><tr><td class="mono">BR-012</td><td>EUROVEND 2 EUR PAYMENT</td><td class="kind">FX difference</td><td class="num mono">0.80</td><td class="st"><span class="chip-app">approved</span></td><td class="detail">Reviewed and approved by controller.</td><td class="mono trace">7853ef91…</td></tr><tr><td class="mono">BR-013</td><td>EUROVEND 3 EUR PAYMENT</td><td class="kind">FX difference</td><td class="num mono">0.80</td><td class="st"><span class="chip-app">approved</span></td><td class="detail">Reviewed and approved by controller.</td><td class="mono trace">7853ef91…</td></tr><tr><td class="mono">BR-014</td><td>ZOOM VIDEO</td><td class="kind">Possible duplicate</td><td class="num mono">0.40</td><td class="st"><span class="chip-app">approved</span><span class="chip-recl">reclassified</span></td><td class="detail">Duplicate ZOOM charge: cash left the account, so book a refund receivable rather than double-booking the expense. Refund requested from vendor. (recla</td><td class="mono trace">7853ef91…</td></tr><tr><td class="mono">BR-015</td><td>POS 4471 SHENZHEN</td><td class="kind">Unknown payee</td><td class="num mono">0.20</td><td class="st"><span class="chip-app">approved</span><span class="chip-recl">reclassified</span></td><td class="detail">Identified: Shenzhen POS is our office-supplies vendor. (reclassified Equity:Suspense -&gt; Expenses:Office)</td><td class="mono trace">7853ef91…</td></tr><tr><td class="mono">BR-016</td><td>POS 8823 SHENZHEN</td><td class="kind">Unknown payee</td><td class="num mono">0.20</td><td class="st"><span class="chip-app">approved</span><span class="chip-recl">reclassified</span></td><td class="detail">Identified: Shenzhen POS is our office-supplies vendor. (reclassified Equity:Suspense -&gt; Expenses:Office)</td><td class="mono trace">7853ef91…</td></tr><tr><td class="mono">BR-017</td><td>ATM WITHDRAWAL LAGOS</td><td class="kind">Unknown payee</td><td class="num mono">0.20</td><td class="st"><span class="chip-app">approved</span><span class="chip-recl">reclassified</span></td><td class="detail">Identified: Lagos ATM withdrawal by the sales lead on the Nigeria trip. (reclassified Equity:Suspense -&gt; Expenses:Travel)</td><td class="mono trace">7853ef91…</td></tr><tr><td class="mono">BR-018</td><td>DISCOUNT 1 PAYMENT</td><td class="kind">Partial payment</td><td class="num mono">0.65</td><td class="st"><span class="chip-app">approved</span></td><td class="detail">Reviewed and approved by controller.</td><td class="mono trace">7853ef91…</td></tr><tr><td class="mono">BR-019</td><td>DODO PAYOUT</td><td class="kind">Processor payout</td><td class="num mono">0.95</td><td class="st"><span class="chip-app">approved</span></td><td class="detail">Reviewed and approved by controller.</td><td class="mono trace">7853ef91…</td></tr><tr><td class="mono">BR-020</td><td>DISCOUNT 2 PAYMENT</td><td class="kind">Partial payment</td><td class="num mono">0.65</td><td class="st"><span class="chip-app">approved</span></td><td class="detail">Reviewed and approved by controller.</td><td class="mono trace">7853ef91…</td></tr><tr><td class="mono">BR-021</td><td>DISCOUNT 3 PAYMENT</td><td class="kind">Partial payment</td><td class="num mono">0.65</td><td class="st"><span class="chip-app">approved</span></td><td class="detail">Reviewed and approved by controller.</td><td class="mono trace">7853ef91…</td></tr><tr><td class="mono">BR-022</td><td>DODO PAYOUT</td><td class="kind">Processor payout</td><td class="num mono">0.80</td><td class="st"><span class="chip-app">approved</span></td><td class="detail">Reviewed and approved by controller.</td><td class="mono trace">7853ef91…</td></tr><tr><td class="mono">AC-001</td><td>accruals</td><td class="kind">Materiality</td><td class="num mono">0.90</td><td class="st"><span class="chip-app">approved</span></td><td class="detail">Approved by controller: Rickard &amp; Co September legal retainer, engagement letter on file. Material item, signed off per policy.</td><td class="mono trace">—</td></tr></tbody>
+</table></div>
+
+<h2><span class="n">§4</span>Entries booked</h2>
+<div class="tiles">
+  <div><div class="k">Bank reconciliation</div><div class="v">116</div><div class="n">entries, incl. approved exceptions</div></div>
+  <div><div class="k">Accruals</div><div class="v">6</div><div class="n">USD 32,350.00 accrued</div></div>
+  <div><div class="k">Depreciation</div><div class="v">3</div><div class="n">USD 1,087.78 charged</div></div>
+  <div><div class="k">Open at close</div><div class="v">0</div><div class="n">every exception resolved</div></div>
+</div>
+
+<footer>
+Generated from <code>metrics.json</code>, <code>exceptions/*.yaml</code> and <code>ledger/2026-09/</code> by
+<code>scripts/build_dashboard.py</code> — no hand-entered figures.
+Source: <a href="https://github.com/PARIDHIPAWAIYA/closeops">github.com/PARIDHIPAWAIYA/closeops</a>.
+Synthetic company data; Dodo Payments figures from test-mode-shaped fixtures.
+</footer>
+</div>

@@ -158,6 +158,20 @@ sessions (Claude Code on the team subscription). The Python package never calls 
 
 ---
 
+## The close dashboard
+
+`docs/dashboard.html` is a single self-contained page rendering the close package: the ten-control
+register, the four-tier funnel, the exception register with the controller's decisions, and the
+run 1 → run 2 improvement. It is **generated from the real artifacts**, never hand-written:
+
+```bash
+python scripts/build_dashboard.py          # reads metrics.json, exceptions/*.yaml, ledger/2026-09/
+```
+
+Open `docs/dashboard.html` in a browser, or see the hosted copy linked from the Devpost entry. The
+AO board remains the operational surface during a close — this is the read-only close package a
+controller or auditor receives afterwards.
+
 ## Setup
 
 Requires Python 3.10+.
