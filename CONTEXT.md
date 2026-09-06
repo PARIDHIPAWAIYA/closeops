@@ -21,6 +21,56 @@ Running log. Newest entry first. Keep it short: what is done, what is next, deci
 - Scope: docs only; no code/tests/scripts touched. Metrics left as placeholders.
 - Next: open PR `build: docs`, address CI comments.
 
+## Sun 6 Sep — Wave 2: decide-llm (branch build/decide-llm)
+- Scope: `closeops decide` (packet + validate), Neatlogs tracing, CLI `decide`
+  subcommand. Zero paid API — no LLM client; judgment happens in AO workers.
+- `closeops/decide.py`:
+  - `render_packet(candidates, company, rules)` -> `work/<task>/packet.md`: the
+    decision contract, chart of accounts, matching rules, and every statement
+    line as a compact chunk (<=20 lines) with ranked candidates + evidence ids.
+    Reads `work/<task>/candidates.json` (prepare output, plan 6.1).
+  - `validate_decisions(candidates, decisions, suspense)` -> list of violations.
+    Schema: every line covered once; `choice`/`rationale`/`confidence` present;
+    choice is a real candidate id or `"exception"`. Contract: auto-post only when
+    the chosen candidate scores >= 0.9; demotions to exception allowed; no
+    Suspense auto-posts; no invented amounts (decision postings must equal the
+    candidate's). `require_validated` raises `DecisionsInvalid` so `apply`
+    refuses until validate passes.
+  - `stamp_provenance` records `decided_by: worker`, `AO_SESSION_ID`, a UTC
+    timestamp, and the trace id into decisions.json on a passing `--validate`.
+- `closeops/trace.py`: `init` (Neatlogs, skipped entirely when NEATLOGS_API_KEY
+  unset), `workflow_span`/`tool_span` decorators that are transparent
+  passthroughs without a key and check enabled state at call time (so
+  import-time decoration still traces once init runs). `current_trace_id` reads
+  the active trace id via `neatlogs.inject_trace_context(carrier)` and parses the
+  W3C `traceparent` (neatlogs 1.4.21's isolated tracer provider makes
+  `opentelemetry.get_current_span()` return trace id 0 inside a span — plan 7
+  corrected), falling back to `neatlogs:closeops-<timestamp>` when injection
+  yields nothing. Live-verified: real 32-hex id lands in decisions.json.
+- Wired: `trace.init()` at the top of the CLI group; `decide` command (packet/
+  validate) under a `decide:<task>` WORKFLOW span; `check` under a WORKFLOW span;
+  each control C1-C10 under a `TOOL` span. Existing check/report/status
+  unchanged.
+- Tests (no API key needed): `tests/test_decide.py` (packet renders; fixture
+  decisions pass; planted violations rejected — below-0.9 auto-post, unknown
+  candidate id, missing line, Suspense auto-post, invented amounts, missing
+  rationale, unknown line; demotion allowed; apply gate refuses unvalidated),
+  `tests/test_trace.py` (init/spans no-op without a key; traceparent parsed to
+  the real id). Fixtures `tests/fixtures/{candidates,decisions}-bank-rec.json`
+  cover T1-T15.
+- Note: `candidates.json` schema is defined here against plan 6.1; bank-rec's
+  prepare (parallel worker) must emit the same shape (`lines[].{line,date,
+  description,amount,source,candidates[]}`, each candidate `{id,kind,score,
+  account,postings[],evidence[],narration}`). `prepare`/`apply` span decoration
+  lands with the bank-rec worker via `trace.workflow_span`.
+- Rebased onto main after period-entries (PR #5) merged; cli.py keeps both the
+  prepare/apply TASKS registry and the decide command in one group.
+- Acceptance met: 76+ tests pass; packet renders for the fixture; fixture
+  decisions pass validate; each planted violation rejected; CLI `decide
+  bank-rec --packet` then `--validate` round-trips; a run reaches Neatlogs when
+  the key is set (skipped cleanly when unset).
+- Next: open PR `build: decide-llm`, address CI comments.
+
 ## Sun 6 Sep — period-entries (Wave 2: accruals + depreciation)
 - Branch `build/period-entries` off main. TDD: tests first, then impl.
 - `closeops/tasks/accruals.py` (plan 6.2): `prepare` selects `booked:false` bills
