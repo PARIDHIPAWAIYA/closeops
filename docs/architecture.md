@@ -94,18 +94,23 @@ be rejected by `--validate`.
 
 ## Components
 
-| Module | Responsibility |
-|---|---|
-| `closeops/cli.py` | `prepare · decide · apply · check · report · baseline · rerun · status` |
-| `closeops/ledger.py` | Load Beancount, balances by account/date, open items, render entries, `bean-check` |
-| `closeops/models.py` | `StatementLine · Invoice · Asset · Payout · Candidate · Decision · Exception · ControlResult` (Decimal money) |
-| `closeops/tasks/` | `bank_rec · accruals · depreciation` — the `prepare` logic per task |
-| `closeops/decide.py` | Packet renderer + `decisions.json` validator |
-| `closeops/trace.py` | Neatlogs init + `@span` decorators on each step and control |
-| `closeops/controls.py` | C1–C10 |
-| `closeops/report.py` | `close-report.md` + `metrics.json` |
-| `closeops/baseline.py` | Exact-match and rules-only funnel tiers |
-| `closeops/rules.py` | Load matching + learned rules; learn from approved exceptions |
+Modules that have shipped so far, and the ones still to land in Wave 2. "Planned"
+rows do not exist in the checkout yet; they are marked the same way the README marks
+their corresponding CLI commands.
+
+| Module | Responsibility | Status |
+|---|---|---|
+| `closeops/cli.py` | `check · report · status` today; `prepare · apply` for accruals/depreciation; `decide · baseline · rerun` land with their workers | shipped (growing) |
+| `closeops/ledger.py` | Load Beancount, balances by account/date, open items, render entries, `bean-check` | shipped |
+| `closeops/models.py` | `StatementLine · Invoice · Asset · Payout · Candidate · Decision · Exception · ControlResult` (Decimal money) | shipped |
+| `closeops/controls.py` | C1–C10 | shipped |
+| `closeops/report.py` | `close-report.md` + `metrics.json` | shipped |
+| `closeops/rules.py` | Load matching + learned rules (learning from approved exceptions is Wave 2) | shipped (load-only) |
+| `closeops/tasks/accruals.py`, `closeops/tasks/depreciation.py` | `prepare`/`apply` logic per task | shipped |
+| `closeops/tasks/bank_rec.py` | Bank-rec `prepare` (incl. `payout` candidates) | planned (Wave 2, bank-rec worker) |
+| `closeops/decide.py` | Packet renderer + `decisions.json` validator | planned (Wave 2, decide-llm worker) |
+| `closeops/trace.py` | Neatlogs init + `@span` decorators on each step and control | planned (Wave 2, decide-llm worker) |
+| `closeops/baseline.py` | Exact-match and rules-only funnel tiers | planned (Wave 2, bank-rec worker) |
 
 ## Money and dates
 
