@@ -12,14 +12,17 @@ import sys
 
 import click
 
+from . import baseline as baseline_mod
 from . import controls, decide as decide_mod, report, trace
 from .tasks import accruals as accruals_task
+from .tasks import bank_rec as bank_rec_task
 from .tasks import depreciation as depreciation_task
 
 # Task registry for prepare/apply. Wave 2 workers append their tasks here;
 # keep entries alphabetical so additions merge without conflict.
 TASKS = {
     "accruals": accruals_task,
+    "bank-rec": bank_rec_task,
     "depreciation": depreciation_task,
 }
 
@@ -92,6 +95,33 @@ def report_cmd(repo):
     passed = metrics["controls"]["passed"]
     total = metrics["controls"]["total"]
     click.echo(f"Wrote close-report.md and metrics.json ({passed}/{total} controls passed).")
+
+
+@main.command()
+@click.argument("task", default="bank-rec")
+@click.option("--repo", default=".", help="Repository root.")
+def baseline(task, repo):
+    """Compute the exact/rules/agent auto-match funnel for TASK (bank-rec)."""
+    if task != "bank-rec":
+        raise click.ClickException("baseline is only defined for bank-rec")
+    tiers = baseline_mod.run(repo)
+    for key in ("exact_baseline", "rules_only", "agent", "after_review"):
+        click.echo(f"  {key:<15} {tiers[key]['rate']}")
+
+
+@main.command()
+@click.argument("task", default="bank-rec")
+@click.option("--repo", default=".", help="Repository root.")
+def rerun(task, repo):
+    """Learn rules from approved exceptions; show run 1 -> run 2 auto-rate."""
+    if task != "bank-rec":
+        raise click.ClickException("rerun is only defined for bank-rec")
+    result = bank_rec_task.rerun(repo)
+    click.echo(f"Run 1 auto-rate: {result['run1']['auto_rate']} "
+               f"({result['run1']['auto']}/{result['run1']['total']})")
+    click.echo(f"Run 2 auto-rate: {result['run2']['auto_rate']} "
+               f"({result['run2']['auto']}/{result['run2']['total']})")
+    click.echo(f"Learned {result['learned_added']} new rule(s) from approved exceptions.")
 
 
 @main.command()
