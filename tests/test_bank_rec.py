@@ -275,6 +275,18 @@ def test_apply_requires_all_lines_covered(repo, candidates):
         bank_rec.apply(str(repo), decisions=dec)
 
 
+def test_find_payout_amount_fallback_is_unambiguous():
+    a = {"payout_id": "po_a", "amount": "4850.00", "fee": "0.00"}
+    b = {"payout_id": "po_b", "amount": "4850.00", "fee": "50.00"}
+    c = {"payout_id": "po_c", "amount": "9700.00", "fee": "300.00"}
+    # explicit reference always wins
+    assert bank_rec._find_payout([a, b, c], "po_b", Decimal("4850.00")) is b
+    # no reference + a unique amount -> that payout
+    assert bank_rec._find_payout([a, c], "", Decimal("9700.00")) is c
+    # no reference + two payouts share the amount -> refuse to guess
+    assert bank_rec._find_payout([a, b], "", Decimal("4850.00")) is None
+
+
 def test_apply_rejects_unknown_choice_id(repo, candidates):
     dec = _decide(candidates)
     dec["decisions"][0]["choice"] = "L2-not-a-real-candidate"

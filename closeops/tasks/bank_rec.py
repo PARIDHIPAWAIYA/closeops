@@ -270,13 +270,14 @@ def build_candidates(line: dict, open_ap, open_ar, payouts, rule_list,
 
 
 def _find_payout(payouts, reference, mag) -> Optional[dict]:
+    # Prefer the explicit reference (payout_id).
     for po in payouts:
         if reference and po.get("payout_id") == reference:
             return po
-    for po in payouts:
-        if _dec(po.get("amount", "0")) == mag:
-            return po
-    return None
+    # Fall back to a net-amount match only when it is unambiguous — if two
+    # payouts share the same net amount, we cannot tell which fee/id applies.
+    by_amount = [po for po in payouts if _dec(po.get("amount", "0")) == mag]
+    return by_amount[0] if len(by_amount) == 1 else None
 
 
 # --------------------------------------------------------------------------- #
