@@ -29,6 +29,18 @@ Running log. Newest entry first. Keep it short: what is done, what is next, deci
   ledger-only, not on the September statement.
 - Next: controls-ci worker (C1–C10, report, cli), then Wave 2 bank-rec.
 
+## Sun 6 Sep — controls-ci (Wave 1)
+- Branch `build/controls-ci`. TDD: tests first, then impl.
+- `closeops/controls.py`: C1-C10 per plan §8. `ControlResult` defined here (self-contained; can move to models.py at integration). `run_all(repo_root)` wires controls to repo files defensively (missing data → failing result, no crash). Money via Decimal only.
+  - C7 uses plan formula: ledger bank == statement closing + outstanding cheques − deposits in transit.
+  - C10: Dodo:Balance == Σpayments − Σrefunds − Σ paid-out gross, where paid-out gross = payout.amount + payout.fee.
+- `closeops/report.py`: `close-report.md` + `metrics.json` — header, control table, metrics/funnel block, entries, exceptions (collapsed in <details> when >5), reconciling items.
+- `closeops/cli.py`: `check [--json]`, `report`, `status`. Entry point `closeops`; also `python -m closeops.cli`. prepare/decide/apply/baseline/rerun left to Wave 2.
+- `.github/workflows/controls.yml`: PR + push main; pytest -q; `closeops check --json` (continue-on-error, PIPESTATUS exit); `closeops report`; `gh pr comment --body-file close-report.md` on PRs; fail if controls failed. No secrets.
+- Tests: `tests/test_controls.py` (per control, hand-built beancount fixtures), `tests/test_report.py`. 32 passing.
+- Note for integration: controls read `data/company.json` (key aliases tolerated) and expect ledger/main.beancount from data-ledger; C1 fails standalone until data-ledger merges (expected).
+- Next: open PR `build: controls-ci`, address CI comments.
+
 ## Sun 6 Sep — start
 - Repo created; AO orchestrator started with the BUILD prompt (plan.md §10.1).
 - Next: wave 1 workers `data-ledger`, `controls-ci`.
