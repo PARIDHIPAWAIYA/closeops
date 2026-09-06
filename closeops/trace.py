@@ -90,20 +90,41 @@ def _now_iso() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+def _trace_id_from_traceparent(traceparent: str):
+    """Pull the 32-hex trace id out of a W3C ``traceparent`` header.
+
+    Format: ``00-<32-hex trace id>-<16-hex span id>-<flags>``. Returns None for a
+    malformed header or an all-zero (invalid/absent) trace id.
+    """
+    if not traceparent:
+        return None
+    parts = traceparent.split("-")
+    if len(parts) < 3:
+        return None
+    trace_id = parts[1]
+    if not trace_id or set(trace_id) == {"0"}:
+        return None
+    return trace_id
+
+
 def current_trace_id(workflow_name: str = WORKFLOW_NAME) -> str:
     """Return ``neatlogs:<id>`` for the active span, else a stable fallback.
 
-    Reading the *current* trace id is an OpenTelemetry call (verified in plan
-    section 7); ``neatlogs.extract_trace_context`` is for cross-process
-    propagation, not for this. When no span is active we fall back to
-    ``neatlogs:<workflow_name>-<timestamp>`` so every judgment still gets an id.
+    neatlogs 1.4.21 runs an isolated tracer provider, so
+    ``opentelemetry.trace.get_current_span()`` sees an invalid span (trace id 0)
+    even inside ``@neatlogs.span``. The working call is
+    ``neatlogs.inject_trace_context(carrier)``, which writes a W3C
+    ``traceparent`` we parse for the real id. When injection yields nothing we
+    fall back to ``neatlogs:<workflow_name>-<timestamp>`` so every judgment still
+    gets an id.
     """
-    try:
-        from opentelemetry import trace as _otel
-
-        ctx = _otel.get_current_span().get_span_context()
-        if ctx is not None and ctx.trace_id:
-            return f"neatlogs:{format(ctx.trace_id, '032x')}"
-    except Exception:
-        pass
+    if _enabled and neatlogs is not None:
+        try:
+            carrier: dict = {}
+            neatlogs.inject_trace_context(carrier)
+            trace_id = _trace_id_from_traceparent(carrier.get("traceparent"))
+            if trace_id:
+                return f"neatlogs:{trace_id}"
+        except Exception:  # pragma: no cover - defensive; fall back to timestamp
+            pass
     return f"neatlogs:{workflow_name}-{_now_iso()}"
