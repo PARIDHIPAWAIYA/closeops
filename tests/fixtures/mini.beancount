@@ -1,0 +1,25 @@
+option "title" "Mini fixture"
+option "operating_currency" "USD"
+
+2026-08-01 open Assets:Bank:Operating USD
+2026-08-01 open Assets:AR USD
+2026-08-01 open Liabilities:AP USD
+2026-08-01 open Equity:OpeningBalances USD
+2026-08-01 open Income:Subscriptions USD
+2026-08-01 open Expenses:Software USD
+
+2026-08-01 * "Opening" "Opening balances"
+  Assets:Bank:Operating   10000.00 USD
+  Equity:OpeningBalances -10000.00 USD
+
+2026-09-02 * "ACME CORP" "ACME bill"
+  invoice: "AP-0001"
+  source: "data/ap/invoices.json"
+  Expenses:Software   1250.00 USD
+  Liabilities:AP     -1250.00 USD
+
+2026-09-05 * "NORTHSTAR" "NORTHSTAR invoice"
+  invoice: "AR-0001"
+  source: "data/ap/invoices.json"
+  Assets:AR            2000.00 USD
+  Income:Subscriptions -2000.00 USD
