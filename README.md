@@ -302,7 +302,7 @@ stay exceptions forever.
 ### The human-in-the-loop moment
 
 The bank-rec PR (#9) went **red on C9 with 22 open exceptions** and stopped. The controller approved
-all 22 and reclassified three off the agent's proposal:
+all 22 and reclassified four of them off the agent's proposal (three distinct decisions):
 
 - **BR-014** duplicate ZOOM charge → `Assets:AR` (refund receivable), not a second software expense
 - **BR-015 / BR-016** Shenzhen POS → `Expenses:Office`
