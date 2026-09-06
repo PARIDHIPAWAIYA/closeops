@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "closeops"
+version = "0.1.0"
+description = "Month-end close that runs as reviewed pull requests"
+requires-python = ">=3.10"
+dependencies = [
+  "beancount>=3.1",
+  "pyyaml>=6",
+  "click>=8",
+  "python-dateutil>=2.9",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+llm = ["anthropic>=0.60", "neatlogs"]
+dodo = ["dodopayments"]
+
+[project.scripts]
+closeops = "closeops.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["closeops*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
