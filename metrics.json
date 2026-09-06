@@ -1,0 +1,91 @@
+{
+  "funnel": {
+    "exact_baseline": "60.3%",
+    "rules_only": "79.3%",
+    "agent": "81.0%",
+    "after_review": "100.0%"
+  },
+  "run1": {
+    "auto": 94,
+    "total": 116,
+    "auto_rate": "81.0%"
+  },
+  "run2": {
+    "auto": 97,
+    "total": 116,
+    "auto_rate": "83.6%"
+  },
+  "controls": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0,
+    "results": [
+      {
+        "id": "C1",
+        "name": "Ledger parses and balances",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "id": "C2",
+        "name": "Trial balance nets to zero",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "id": "C3",
+        "name": "Period lock",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "id": "C4",
+        "name": "Non-empty source",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "id": "C5",
+        "name": "Materiality approved",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "id": "C6",
+        "name": "No duplicates",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "id": "C7",
+        "name": "Bank reconciles",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "id": "C8",
+        "name": "Suspense is zero",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "id": "C9",
+        "name": "No open exceptions",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "id": "C10",
+        "name": "Dodo balance",
+        "passed": true,
+        "detail": ""
+      }
+    ]
+  },
+  "exceptions": {
+    "open": 0,
+    "approved": 23,
+    "rejected": 0,
+    "total": 23
+  }
+}

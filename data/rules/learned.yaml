@@ -1,2 +1,9 @@
-# Learned rules are appended by Wave 2 (rerun). Starts empty.
-[]
+# Learned rules (appended by `closeops rerun`).
+- match: SHENZHEN
+  account: Expenses:Office
+  confidence: 0.9
+  learned_from: BR-015
+- match: LAGOS
+  account: Expenses:Travel
+  confidence: 0.9
+  learned_from: BR-017
