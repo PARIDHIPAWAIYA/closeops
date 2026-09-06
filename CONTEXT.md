@@ -2,6 +2,25 @@
 
 Running log. Newest entry first. Keep it short: what is done, what is next, decisions.
 
+## Sun 6 Sep — Wave 2: docs (branch build/docs)
+- Expanded `README.md` from the 2-line stub: setup, the prepare/decide/apply/check
+  flow, architecture summary (deterministic sandwich), the ten controls, the
+  four-tier funnel, sponsor tools (AO as runtime, Neatlogs traces, Dodo
+  fixture-by-default with live test-mode noted), a "why git / why plain-text
+  ledger" section, and a Results section left as clearly-marked placeholders (the
+  runtime close has not happened yet — no fabricated metrics).
+- Added `docs/architecture.md` (plan §2: the sandwich, component table, money/date
+  rules, tracing) and `docs/controls.md` (C1–C10 table + per-control rationale,
+  including the C7/C10 pre-bank-rec 8/10 note and the T14 po_002 fee open item from
+  CONTEXT).
+- Added `docs/demo-script.md` (plan §11 shot list + human review loop + a
+  pre-record checklist) with the Devpost outline (plan §12) appended.
+- `docs/prompts/{orchestrator-build,orchestrator-close,worker-bank-rec,
+  worker-accruals,worker-depreciation}.md` already existed on main and match plan
+  §10.1/§10.2/§10.3 verbatim — verified, left unchanged.
+- Scope: docs only; no code/tests/scripts touched. Metrics left as placeholders.
+- Next: open PR `build: docs`, address CI comments.
+
 ## Sun 6 Sep — period-entries (Wave 2: accruals + depreciation)
 - Branch `build/period-entries` off main. TDD: tests first, then impl.
 - `closeops/tasks/accruals.py` (plan 6.2): `prepare` selects `booked:false` bills
