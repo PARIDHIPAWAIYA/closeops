@@ -71,6 +71,46 @@ Running log. Newest entry first. Keep it short: what is done, what is next, deci
   the key is set (skipped cleanly when unset).
 - Next: open PR `build: decide-llm`, address CI comments.
 
+## Sun 6 Sep — Wave 2: bank-rec (branch build/bank-rec)
+- `closeops/tasks/bank_rec.py`: `prepare` writes `work/bank-rec/candidates.json`
+  (deterministic, plan §6.1) — per line, ranked candidates with evidence ids:
+  exact 0.95 (+0.03 counterparty token; same-amount ties both listed — T15),
+  rule (matching+learned), payout 0.95 / 0.80 if fee missing (T14), split 0.70,
+  partial 0.65 (covers T10 discounts as short-pay), fx 0.80, duplicate 0.40,
+  none 0.20→Suspense. `apply` enforces the contract independently of `decide`
+  (auto-post only score≥0.9, never Suspense, never ≥materiality → those route to
+  an exception for approval), renders `ledger/2026-09/bank-rec.beancount` (+meta),
+  `exceptions/bank-rec.yaml`, and `exceptions/bank-rec-reconciling.json` for C7.
+  Approved exceptions (status: approved, controller may edit proposed_entry, e.g.
+  reclassify Suspense) re-post on the next apply with `approved-by` meta.
+- Exact matching is token-gated (a same-amount item must share a counterparty
+  token) so coincidental amount collisions (WEWORK 4100 vs an unrelated 4100
+  bill) don't false-match. Open items exclude bank-rec's own entries so
+  prepare/baseline stay idempotent after apply.
+- `closeops/baseline.py`: four-tier funnel — exact 60.3% < rules 79.3% <
+  agent(reference decider) 81.0% < after-review 100% (monotonic; agent's lower raw
+  count vs a naive rules bot is the safety win — it holds material/ambiguous items
+  and demotes duplicates). Writes `funnel` into metrics.json.
+- `closeops/rules.py`: `learn_from_exceptions` (approved exception + a real
+  expense/income account → rule keyed on a distinctive description token),
+  `save_learned`. `rerun` learns then re-scores: run1 81.0% → run2 87.1%.
+- `closeops/cli.py`: registered `bank-rec` in the prepare/apply registry; added
+  `baseline` and `rerun` subcommands. check/report/status untouched.
+- Contract/C7 note: controls-ci's C7 uses `statement + Σoutstanding − Σdeposits`;
+  `bank-rec-reconciling.json` stores signed contributions to match it (cheque =
+  bank delta, negative; deposit = negated delta) so the book reconciles.
+- Acceptance met: candidates for all 116 lines; reference decisions apply cleanly
+  and pass bean-check; after approving exceptions all 10 controls pass (C7 and
+  C10 satisfiable); baseline funnel + run1→run2 written. Tests: `tests/test_bank_rec.py`
+  (one per T1–T15, `<0.9 never auto-posts`, duplicate/T15 demotion honored,
+  material→approval, reconciling, baseline monotonic, rerun raises auto-rate).
+  100 tests pass.
+- Learned rules are a demonstration heuristic (category→recurring rule); may
+  over-generalize (e.g. EUROVEND→Expenses:FX), the human still reviews.
+- Next: open PR `build: bank-rec`; address CI comments. decide-llm consumes
+  `candidates.json` and writes the real `decisions.json` (this worker did not
+  touch decide.py/trace.py).
+
 ## Sun 6 Sep — period-entries (Wave 2: accruals + depreciation)
 - Branch `build/period-entries` off main. TDD: tests first, then impl.
 - `closeops/tasks/accruals.py` (plan 6.2): `prepare` selects `booked:false` bills
