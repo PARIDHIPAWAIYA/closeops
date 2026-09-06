@@ -418,7 +418,15 @@ def apply(repo_root=".", decisions=None, run_bean_check=True) -> dict:
 
     prior = _load_prior_exceptions(root)
 
-    trace = _trace_id()
+    # Provenance: decide-llm's --validate stamps top-level trace / decided_by /
+    # session_id / timestamp on decisions.json. Copy them onto every entry and
+    # exception so each judgment is attributable; fall back to constants.
+    prov = {
+        "trace": decisions.get("trace") or _trace_id(),
+        "decided_by": decisions.get("decided_by") or "worker",
+        "session_id": decisions.get("session_id"),
+        "timestamp": decisions.get("timestamp"),
+    }
     auto_posts: list[dict] = []
     exceptions: list[dict] = []
     exc_seq = 0
@@ -431,14 +439,14 @@ def apply(repo_root=".", decisions=None, run_bean_check=True) -> dict:
 
         may_auto = choice != "exception" and classify(chosen, materiality, suspense)
         if may_auto:
-            auto_posts.append(_entry_from_candidate(ln, chosen, company, trace,
-                                                    dec, approved_by=None))
+            auto_posts.append(_entry_from_candidate(ln, chosen, company, prov,
+                                                    approved_by=None))
             continue
 
         # exception: proposed_entry is the chosen candidate, else the top one
         proposed = chosen if chosen is not None else top
         exc_seq += 1
-        exc = _build_exception(ln, proposed, dec, exc_seq, trace, prior)
+        exc = _build_exception(ln, proposed, dec, exc_seq, prov, prior, materiality)
         exceptions.append(exc)
         if exc["status"] == "approved" and exc.get("proposed_entry", {}).get("postings"):
             auto_posts.append(_entry_from_exception(ln, exc, dec))
@@ -464,13 +472,13 @@ def apply(repo_root=".", decisions=None, run_bean_check=True) -> dict:
     }
 
 
-def _entry_from_candidate(ln, cand, company, trace, dec, approved_by) -> dict:
+def _entry_from_candidate(ln, cand, company, prov, approved_by) -> dict:
     meta = {
         "source": ln["source"],
         "task": TASK,
         "confidence": str(cand["score"]),
-        "decided_by": dec.get("decided_by", "worker"),
-        "trace": trace,
+        "decided_by": prov["decided_by"],
+        "trace": prov["trace"],
     }
     if approved_by:
         meta["approved-by"] = approved_by
@@ -504,7 +512,7 @@ def _entry_from_exception(ln, exc, dec) -> dict:
     }
 
 
-def _build_exception(ln, proposed, dec, seq, trace, prior) -> dict:
+def _build_exception(ln, proposed, dec, seq, prov, prior, materiality) -> dict:
     exc_id = f"BR-{seq:03d}"
     proposed_entry = {}
     if proposed is not None:
@@ -513,19 +521,35 @@ def _build_exception(ln, proposed, dec, seq, trace, prior) -> dict:
             "narration": proposed.get("narration", ln["description"]),
             "postings": proposed["postings"],
         }
+    # A line demoted for being a possible duplicate is a "duplicate" exception even
+    # though its proposed entry is the best real candidate — so it reads correctly
+    # and is never learned from. Its confidence reflects the duplicate suspicion.
+    dup = next((c for c in ln["candidates"] if c["kind"] == "duplicate"), None)
+    if dup is not None:
+        kind = "duplicate"
+        confidence = str(dup["score"])
+    else:
+        kind = proposed["kind"] if proposed else "none"
+        confidence = str(proposed["score"]) if proposed else "0.20"
+    is_material = proposed is not None and _max_posting_mag(proposed) >= materiality
     exc = {
         "id": exc_id,
         "task": TASK,
         "source": ln["source"],
         "description": ln["description"],
-        "issue": _issue_text(ln, proposed, dec),
+        "kind": kind,
+        "issue": _issue_text(ln, kind, is_material),
         "proposed_entry": proposed_entry,
-        "confidence": str(proposed["score"]) if proposed else "0.20",
-        "decided_by": dec.get("decided_by", "worker"),
-        "trace": trace,
+        "confidence": confidence,
+        "decided_by": prov["decided_by"],
+        "trace": prov["trace"],
         "status": "open",
         "reviewer_note": "",
     }
+    if prov.get("session_id"):
+        exc["session_id"] = prov["session_id"]
+    if prov.get("timestamp"):
+        exc["timestamp"] = prov["timestamp"]
     # carry controller review from a previous run, matched by source line
     was = prior.get(ln["source"])
     if was:
@@ -542,18 +566,20 @@ def _build_exception(ln, proposed, dec, seq, trace, prior) -> dict:
     return exc
 
 
-def _issue_text(ln, proposed, dec) -> str:
-    kind = proposed["kind"] if proposed else "none"
-    base = {
-        "split": "matches only as a split across multiple bills",
-        "partial": "partial payment, remainder stays open",
-        "fx": "amount differs from the bill within FX/rounding tolerance",
-        "duplicate": "possible duplicate charge",
-        "none": "unknown counterparty, no confident match",
-        "payout": "processor payout with fee missing from the record",
-        "exact": "material amount - needs controller approval",
-        "rule": "material amount - needs controller approval",
-    }.get(kind, "needs controller review")
+def _issue_text(ln, kind, is_material=False) -> str:
+    if is_material and kind in ("exact", "rule"):
+        base = "material amount - needs controller approval"
+    elif kind in ("exact", "rule"):
+        base = "ambiguous or conflicting match - demoted for review"
+    else:
+        base = {
+            "split": "matches only as a split across multiple bills",
+            "partial": "partial payment, remainder stays open",
+            "fx": "amount differs from the bill within FX/rounding tolerance",
+            "duplicate": "possible duplicate charge",
+            "none": "unknown counterparty, no confident match",
+            "payout": "processor payout with fee missing from the record",
+        }.get(kind, "needs controller review")
     return f"Line {ln['line']} ({ln['amount']} '{ln['description']}') - {base}"
 
 
@@ -713,10 +739,12 @@ def rerun(repo_root=".") -> dict:
     cands1 = prepare(repo_root, rule_list=seed_rules, write=False)
     run1 = _auto_rate(cands1, materiality)
 
-    # learn from approved exceptions
+    # learn from approved exceptions (safely: see rules.learn_from_exceptions)
     exceptions = _load_yaml(root / "exceptions" / "bank-rec.yaml")
     existing = rules.load_learned_raw(learned_path)
-    merged = rules.learn_from_exceptions(exceptions, existing)
+    existing_rules = rules.load_rules(matching_path, learned_path)
+    merged = rules.learn_from_exceptions(
+        exceptions, existing, existing_rules=existing_rules, materiality=materiality)
     learned_added = len(merged) - len(existing)
     rules.save_learned(learned_path, merged)
 

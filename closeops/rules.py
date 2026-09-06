@@ -72,6 +72,11 @@ _GENERIC_TOKENS = {
 
 _LEARNABLE_PREFIXES = ("Expenses:", "Income:")
 
+# Only unknown-payee and plain recurring-payee exceptions generalise to a rule.
+# fx/split/partial/payout/duplicate/exact are one-off structural matches — a rule
+# from them would auto-post an entire payment (or payout) to the wrong account.
+_LEARNABLE_KINDS = {"none", "rule"}
+
 
 def learn_token(description: str) -> Optional[str]:
     """Pick a distinctive uppercase token from a bank description to key a rule."""
@@ -91,22 +96,41 @@ def _learnable_account(proposed_entry: dict) -> Optional[str]:
 
 
 def learn_from_exceptions(exceptions, existing: Optional[list] = None,
-                          confidence="0.90") -> list[dict]:
-    """Derive learned rules from *approved* exceptions with a clear expense/income
-    account. Returns the merged learned-rule dicts (existing + new, de-duplicated).
+                          existing_rules: Optional[list] = None,
+                          materiality=None, confidence="0.90") -> list[dict]:
+    """Derive learned rules from *approved* exceptions, safely.
 
-    Split/partial/FX exceptions post only to control accounts (AP/AR) and yield no
-    rule; unknown-payee items the controller reclassified to a real expense do.
+    A rule is learned only when the approved exception:
+      * is ``status: approved`` and of a learnable kind (unknown-payee ``none`` or
+        recurring ``rule``) — never fx/split/partial/payout/duplicate/exact,
+      * has exactly two postings (the bank account plus one real expense/income
+        account — the reclassified target),
+      * is below materiality (material items must stay exceptions), and
+      * is not already covered by an existing rule.
+
+    Returns the merged learned-rule dicts (existing + new, de-duplicated).
     """
     merged = list(existing or [])
     seen = {(r["match"], r["account"]) for r in merged}
+    mat = Decimal(str(materiality)) if materiality is not None else None
     for exc in exceptions or []:
         if not isinstance(exc, dict) or exc.get("status") != "approved":
             continue
-        account = _learnable_account(exc.get("proposed_entry", {}))
+        if exc.get("kind") not in _LEARNABLE_KINDS:
+            continue
+        proposed = exc.get("proposed_entry", {}) or {}
+        postings = proposed.get("postings", [])
+        if len(postings) != 2:
+            continue
+        if mat is not None and any(
+                abs(Decimal(str(p.get("amount", "0")))) >= mat for p in postings):
+            continue
+        account = _learnable_account(proposed)
         if not account:
             continue
         desc = exc.get("description") or _desc_from_issue(exc.get("issue", ""))
+        if existing_rules and match(desc, existing_rules) is not None:
+            continue  # an existing rule already handles this description
         token = learn_token(desc)
         if not token:
             continue
