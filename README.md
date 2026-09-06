@@ -302,7 +302,11 @@ rubber stamp.
 
 - **AO** built the project (7 PRs, one worker each, AO's own reviewer on every PR) and ran the close
   (3 close PRs). See `docs/AO-LOG.md`.
-- **Neatlogs** traced every close step; all 22 bank-rec exceptions carry a real Neatlogs trace id.
+- **Neatlogs** traced every close step. All 94 booked bank-rec entries and all 22 bank-rec
+  exceptions carry a real Neatlogs trace id (e.g. `neatlogs:7853ef917eac793eb6376cc1283d467f`),
+  so any journal entry can be traced back to the decide run that produced it. The single
+  accruals exception has an empty `trace` field: accruals renders a zero-line packet, so
+  provenance had nothing to copy from — a known gap, not a claim we make.
 - **Dodo Payments** — payout reconciliation ran on **fixture** data in the shape of Dodo's
   test-mode API (`scripts/fetch_dodo.py --fixture`); `--live` uses the `dodopayments` SDK against
   `test_mode`. Both payouts reconciled, C10 green.
