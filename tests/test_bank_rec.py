@@ -275,6 +275,13 @@ def test_apply_requires_all_lines_covered(repo, candidates):
         bank_rec.apply(str(repo), decisions=dec)
 
 
+def test_apply_rejects_unknown_choice_id(repo, candidates):
+    dec = _decide(candidates)
+    dec["decisions"][0]["choice"] = "L2-not-a-real-candidate"
+    with pytest.raises(ValueError, match="unknown candidate"):
+        bank_rec.apply(str(repo), decisions=dec)
+
+
 def test_reconciling_written(repo, candidates):
     dec = _decide(candidates)
     bank_rec.apply(str(repo), decisions=dec)

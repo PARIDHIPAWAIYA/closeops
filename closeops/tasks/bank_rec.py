@@ -415,6 +415,13 @@ def apply(repo_root=".", decisions=None, run_bean_check=True) -> dict:
     missing = [ln["line"] for ln in candidates["lines"] if ln["line"] not in dec_by_line]
     if missing:
         raise ValueError(f"decisions missing for lines: {missing[:10]}")
+    # a non-exception choice must name a real candidate; an unknown id is a
+    # malformed decisions.json and must surface, not silently become an exception.
+    bad = [(d["line"], d["choice"]) for d in decisions["decisions"]
+           if d["choice"] != "exception" and d["choice"] not in cand_by_id]
+    if bad:
+        detail = ", ".join(f"line {ln}: {ch!r}" for ln, ch in bad[:10])
+        raise ValueError(f"decisions reference unknown candidate id(s): {detail}")
 
     prior = _load_prior_exceptions(root)
 
