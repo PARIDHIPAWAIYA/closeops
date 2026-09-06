@@ -220,7 +220,7 @@ Beancount 3.2.x, Python 3.12 (`pip install beancount`). Transactions: `2026-09-1
 1. `claude` once and `/login` so AO-spawned sessions authenticate on the Team subscription (no API key, no spend).
 2. `gh auth status`.
 3. AO desktop for Windows from the AO releases page (current build); launch; `ao doctor` if CLI present. If it fails after 30 min → §13 fallback, ask in Discord `#syndicate-help`.
-4. `python -m pip install beancount pyyaml click pytest anthropic neatlogs dodopayments`.
+4. `python -m pip install beancount pyyaml click pytest neatlogs dodopayments`.
 5. Accounts (all free tiers): Neatlogs (key → `NEATLOGS_API_KEY`), Dodo test mode (`DODO_PAYMENTS_API_KEY`, optional). No Anthropic API key: model work runs on the Team subscription inside AO. `.env` local only.
 6. `mkdir C:\Users\pawai\closeops && cd … && git init -b main`; add README (2 lines), plan.md (this), CONTEXT.md, `.gitignore`, `.env.example`; `git commit -m "Initial scaffold"`; `gh repo create <account>/closeops --public --source=. --push`; add teammate as collaborator.
 7. AO: Add project → repo path; worker agent Claude Code; base branch main; setup command `pip install -e .[test,trace,dodo]`. Spawn orchestrator (kind=orchestrator, mode=chat), paste the BUILD prompt (§10.1).
