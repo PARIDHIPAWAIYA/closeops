@@ -340,6 +340,27 @@ def test_baseline_writes_metrics(repo):
     assert "exact_baseline" in metrics["funnel"]
 
 
+def test_rerun_does_not_learn_unsafe_rules(repo, candidates):
+    """Approving everything must NOT learn fx/split/partial/payout rules, nor a
+    rule for the material GUSTO line; the material line stays an exception in run 2."""
+    dec = _decide(candidates)
+    bank_rec.apply(str(repo), decisions=dec)
+    _approve_all(repo)
+    bank_rec.rerun(str(repo))
+
+    learned = yaml.safe_load((repo / "data" / "rules" / "learned.yaml").read_text()) or []
+    tokens = {r["match"] for r in learned}
+    accounts = {r["account"] for r in learned}
+    assert "GUSTO" not in tokens                        # material + seed rule exists
+    assert "EUROVEND" not in tokens                     # fx exception, not learnable
+    assert "Expenses:FX" not in accounts
+    assert "Expenses:PaymentProcessing" not in accounts  # payout fee, not learnable
+
+    cands2 = json.loads((repo / "work" / "bank-rec" / "candidates.json").read_text())
+    gusto = line_by(cands2, desc="GUSTO PAYROLL", amount="-12500.00")
+    assert not is_auto(gusto)   # material line must remain an exception in run 2
+
+
 def test_rerun_learns_rule_and_raises_auto_rate(repo, candidates):
     # resolve the close, then approve the unknown-payee items reclassified to a
     # real account so a rule can be learned from them.
