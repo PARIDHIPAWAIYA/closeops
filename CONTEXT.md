@@ -20,8 +20,15 @@ Running log. Newest entry first. Keep it short: what is done, what is next, deci
   pre-bank-rec cross-task failures (September bank/Dodo postings not on this branch),
   documented earlier and outside accruals scope.
 - Committed ledger/2026-09/accruals.beancount + exceptions/accruals.yaml
-  ("close(2026-09): accruals entries"). 128 tests pass.
-- Next: open PR "close(2026-09): accruals"; C9 needs controller review of AC-001.
+  ("close(2026-09): accruals entries"). 128 tests pass. PR #8 opened.
+- Controller approved AC-001 (status: approved, reviewer_note) on close/accruals.
+  Pulled, re-ran apply -> the 14,500 legal retainer books with an `approved-by`
+  meta (6 entries booked total, 0 open exceptions). Committed
+  ("close(2026-09): book approved accrual AC-001") and pushed.
+- CI on PR #8: C1-C6, C8, C9 PASS (C9 now green — no open exceptions). C7/C10
+  remain red only because close/bank-rec runtime postings are not on this branch
+  (accruals posts nothing to Bank/Dodo); expected, resolves on merge. No
+  accruals-side fix. Task complete.
 
 ## Sun 6 Sep — Wave 2: docs (branch build/docs)
 - Expanded `README.md` from the 2-line stub: setup, the prepare/decide/apply/check
