@@ -1,0 +1,58 @@
+[
+  {
+    "payment_id": "pay_001",
+    "total_amount": "1500.00",
+    "currency": "USD",
+    "created_at": "2026-09-02",
+    "customer": "Acme Analytics"
+  },
+  {
+    "payment_id": "pay_002",
+    "total_amount": "2500.00",
+    "currency": "USD",
+    "created_at": "2026-09-04",
+    "customer": "Bright Labs"
+  },
+  {
+    "payment_id": "pay_003",
+    "total_amount": "1800.00",
+    "currency": "USD",
+    "created_at": "2026-09-06",
+    "customer": "Cobalt Systems"
+  },
+  {
+    "payment_id": "pay_004",
+    "total_amount": "2200.00",
+    "currency": "USD",
+    "created_at": "2026-09-09",
+    "customer": "Delta Works"
+  },
+  {
+    "payment_id": "pay_005",
+    "total_amount": "1200.00",
+    "currency": "USD",
+    "created_at": "2026-09-12",
+    "customer": "Echo Retail"
+  },
+  {
+    "payment_id": "pay_006",
+    "total_amount": "3100.00",
+    "currency": "USD",
+    "created_at": "2026-09-15",
+    "customer": "Foxtrot Media"
+  },
+  {
+    "payment_id": "pay_007",
+    "total_amount": "1900.00",
+    "currency": "USD",
+    "created_at": "2026-09-20",
+    "customer": "Gamma Health"
+  },
+  {
+    "payment_id": "pay_008",
+    "total_amount": "1800.00",
+    "currency": "USD",
+    "created_at": "2026-09-23",
+    "customer": "Helix Studio"
+  }
+]

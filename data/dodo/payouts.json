@@ -1,0 +1,20 @@
+[
+  {
+    "payout_id": "po_001",
+    "amount": "9700.00",
+    "fee": "300.00",
+    "currency": "USD",
+    "status": "success",
+    "created_at": "2026-09-18",
+    "payout_document_url": "https://test.dodopayments.com/payouts/po_001"
+  },
+  {
+    "payout_id": "po_002",
+    "amount": "4850.00",
+    "fee": "0.00",
+    "currency": "USD",
+    "status": "success",
+    "created_at": "2026-09-25",
+    "payout_document_url": "https://test.dodopayments.com/payouts/po_002"
+  }
+]

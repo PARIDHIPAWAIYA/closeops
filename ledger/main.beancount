@@ -1,0 +1,729 @@
+option "title" "Northwind Labs Inc."
+option "operating_currency" "USD"
+
+2026-08-01 open Assets:Bank:Operating USD
+2026-08-01 open Assets:AR USD
+2026-08-01 open Assets:Dodo:Balance USD
+2026-08-01 open Assets:Prepaid:Insurance USD
+2026-08-01 open Assets:Prepaid:Software USD
+2026-08-01 open Assets:FixedAssets:Computers USD
+2026-08-01 open Assets:FixedAssets:Furniture USD
+2026-08-01 open Assets:FixedAssets:AccumulatedDepreciation USD
+2026-08-01 open Liabilities:AP USD
+2026-08-01 open Liabilities:Accrued:Expenses USD
+2026-08-01 open Liabilities:Accrued:Payroll USD
+2026-08-01 open Liabilities:CreditCard USD
+2026-08-01 open Liabilities:DeferredRevenue USD
+2026-08-01 open Liabilities:SalesTaxPayable USD
+2026-08-01 open Equity:OpeningBalances USD
+2026-08-01 open Equity:RetainedEarnings USD
+2026-08-01 open Equity:Suspense USD
+2026-08-01 open Income:Subscriptions USD
+2026-08-01 open Income:Services USD
+2026-08-01 open Income:Interest USD
+2026-08-01 open Income:Other USD
+2026-08-01 open Expenses:Payroll:Salaries USD
+2026-08-01 open Expenses:Payroll:Taxes USD
+2026-08-01 open Expenses:Payroll:Benefits USD
+2026-08-01 open Expenses:Rent USD
+2026-08-01 open Expenses:Software USD
+2026-08-01 open Expenses:Hosting USD
+2026-08-01 open Expenses:Marketing USD
+2026-08-01 open Expenses:Travel USD
+2026-08-01 open Expenses:Meals USD
+2026-08-01 open Expenses:Insurance USD
+2026-08-01 open Expenses:Legal USD
+2026-08-01 open Expenses:Accounting USD
+2026-08-01 open Expenses:BankFees USD
+2026-08-01 open Expenses:PaymentProcessing USD
+2026-08-01 open Expenses:Depreciation USD
+2026-08-01 open Expenses:Office USD
+2026-08-01 open Expenses:Utilities USD
+2026-08-01 open Expenses:Contractors USD
+2026-08-01 open Expenses:FX USD
+2026-08-01 open Expenses:Telecom USD
+2026-08-01 open Expenses:Supplies USD
+
+2026-08-01 * "Opening" "Opening balances"
+  Assets:Bank:Operating  500000.00 USD
+  Assets:AR  40000.00 USD
+  Assets:Dodo:Balance  0.00 USD
+  Assets:Prepaid:Insurance  12000.00 USD
+  Assets:Prepaid:Software  6000.00 USD
+  Assets:FixedAssets:Computers  32800.00 USD
+  Assets:FixedAssets:Furniture  9600.00 USD
+  Assets:FixedAssets:AccumulatedDepreciation  -10266.68 USD
+  Liabilities:CreditCard  -8000.00 USD
+  Liabilities:DeferredRevenue  -15000.00 USD
+  Equity:OpeningBalances  -567133.32 USD
+
+2026-08-02 balance Assets:Bank:Operating  500000.00 USD
+
+2026-08-02 balance Assets:AR  40000.00 USD
+
+2026-08-05 * "Gusto" "August payroll"
+  source: "data/bank/aug-2026.csv"
+  Expenses:Payroll:Salaries  60000.00 USD
+  Expenses:Payroll:Taxes  9000.00 USD
+  Expenses:Payroll:Benefits  4000.00 USD
+  Assets:Bank:Operating  -73000.00 USD
+
+2026-08-05 * "WeWork" "August rent"
+  source: "data/bank/aug-2026.csv"
+  Expenses:Rent  12000.00 USD
+  Assets:Bank:Operating  -12000.00 USD
+
+2026-08-10 * "LEGAL EAGLE LLP" "LEGAL EAGLE LLP bill"
+  invoice: "AP-0074"
+  source: "data/ap/invoices.json"
+  Expenses:Legal  8100.00 USD
+  Liabilities:AP  -8100.00 USD
+
+2026-08-10 * "ADWORKS MEDIA" "ADWORKS MEDIA bill"
+  invoice: "AP-0075"
+  source: "data/ap/invoices.json"
+  Expenses:Marketing  8200.00 USD
+  Liabilities:AP  -8200.00 USD
+
+2026-08-15 * "Northstar" "August AR collection"
+  source: "data/bank/aug-2026.csv"
+  Assets:Bank:Operating  30000.00 USD
+  Assets:AR  -30000.00 USD
+
+2026-08-20 * "Adobe" "August software (card)"
+  source: "data/ap/invoices.json"
+  Expenses:Software  3000.00 USD
+  Liabilities:CreditCard  -3000.00 USD
+
+2026-08-31 * "Depreciation" "August depreciation"
+  source: "data/fixed-assets.csv"
+  Expenses:Depreciation  937.78 USD
+  Assets:FixedAssets:AccumulatedDepreciation  -937.78 USD
+
+2026-09-01 * "ACME CORP" "ACME CORP bill"
+  invoice: "AP-0001"
+  source: "data/ap/invoices.json"
+  Expenses:Software  500.00 USD
+  Liabilities:AP  -500.00 USD
+
+2026-09-01 * "GLOBEX LLC" "GLOBEX LLC bill"
+  invoice: "AP-0002"
+  source: "data/ap/invoices.json"
+  Expenses:Hosting  563.50 USD
+  Liabilities:AP  -563.50 USD
+
+2026-09-01 * "INITECH" "INITECH bill"
+  invoice: "AP-0003"
+  source: "data/ap/invoices.json"
+  Expenses:Marketing  627.00 USD
+  Liabilities:AP  -627.00 USD
+
+2026-09-01 * "UMBRELLA CO" "UMBRELLA CO bill"
+  invoice: "AP-0004"
+  source: "data/ap/invoices.json"
+  Expenses:Travel  690.50 USD
+  Liabilities:AP  -690.50 USD
+
+2026-09-01 * "STARK INDS" "STARK INDS bill"
+  invoice: "AP-0005"
+  source: "data/ap/invoices.json"
+  Expenses:Meals  754.00 USD
+  Liabilities:AP  -754.00 USD
+
+2026-09-01 * "WAYNE ENT" "WAYNE ENT bill"
+  invoice: "AP-0006"
+  source: "data/ap/invoices.json"
+  Expenses:Legal  817.50 USD
+  Liabilities:AP  -817.50 USD
+
+2026-09-01 * "HOOLI INC" "HOOLI INC bill"
+  invoice: "AP-0007"
+  source: "data/ap/invoices.json"
+  Expenses:Accounting  881.00 USD
+  Liabilities:AP  -881.00 USD
+
+2026-09-01 * "VANDELAY" "VANDELAY bill"
+  invoice: "AP-0008"
+  source: "data/ap/invoices.json"
+  Expenses:Office  944.50 USD
+  Liabilities:AP  -944.50 USD
+
+2026-09-01 * "SOYLENT" "SOYLENT bill"
+  invoice: "AP-0009"
+  source: "data/ap/invoices.json"
+  Expenses:Utilities  1008.00 USD
+  Liabilities:AP  -1008.00 USD
+
+2026-09-01 * "CYBERDYNE" "CYBERDYNE bill"
+  invoice: "AP-0010"
+  source: "data/ap/invoices.json"
+  Expenses:Contractors  1071.50 USD
+  Liabilities:AP  -1071.50 USD
+
+2026-09-01 * "TYRELL CORP" "TYRELL CORP bill"
+  invoice: "AP-0011"
+  source: "data/ap/invoices.json"
+  Expenses:Telecom  1135.00 USD
+  Liabilities:AP  -1135.00 USD
+
+2026-09-01 * "OSCORP" "OSCORP bill"
+  invoice: "AP-0012"
+  source: "data/ap/invoices.json"
+  Expenses:Supplies  1198.50 USD
+  Liabilities:AP  -1198.50 USD
+
+2026-09-01 * "NAKATOMI" "NAKATOMI bill"
+  invoice: "AP-0013"
+  source: "data/ap/invoices.json"
+  Expenses:Insurance  1262.00 USD
+  Liabilities:AP  -1262.00 USD
+
+2026-09-01 * "GEKKO CAP" "GEKKO CAP bill"
+  invoice: "AP-0014"
+  source: "data/ap/invoices.json"
+  Expenses:Software  1325.50 USD
+  Liabilities:AP  -1325.50 USD
+
+2026-09-01 * "BLUTH CO" "BLUTH CO bill"
+  invoice: "AP-0015"
+  source: "data/ap/invoices.json"
+  Expenses:Hosting  1389.00 USD
+  Liabilities:AP  -1389.00 USD
+
+2026-09-01 * "DUNDER MIFFLIN" "DUNDER MIFFLIN bill"
+  invoice: "AP-0016"
+  source: "data/ap/invoices.json"
+  Expenses:Marketing  1452.50 USD
+  Liabilities:AP  -1452.50 USD
+
+2026-09-01 * "PRESTIGE WW" "PRESTIGE WW bill"
+  invoice: "AP-0017"
+  source: "data/ap/invoices.json"
+  Expenses:Travel  1516.00 USD
+  Liabilities:AP  -1516.00 USD
+
+2026-09-01 * "WERNHAM HOGG" "WERNHAM HOGG bill"
+  invoice: "AP-0018"
+  source: "data/ap/invoices.json"
+  Expenses:Meals  1579.50 USD
+  Liabilities:AP  -1579.50 USD
+
+2026-09-01 * "MASSIVE DYN" "MASSIVE DYN bill"
+  invoice: "AP-0019"
+  source: "data/ap/invoices.json"
+  Expenses:Legal  1643.00 USD
+  Liabilities:AP  -1643.00 USD
+
+2026-09-01 * "VEHEMENT CAP" "VEHEMENT CAP bill"
+  invoice: "AP-0020"
+  source: "data/ap/invoices.json"
+  Expenses:Accounting  1706.50 USD
+  Liabilities:AP  -1706.50 USD
+
+2026-09-01 * "PIED PIPER" "PIED PIPER bill"
+  invoice: "AP-0021"
+  source: "data/ap/invoices.json"
+  Expenses:Office  1770.00 USD
+  Liabilities:AP  -1770.00 USD
+
+2026-09-01 * "ARAMARK" "ARAMARK bill"
+  invoice: "AP-0022"
+  source: "data/ap/invoices.json"
+  Expenses:Utilities  1833.50 USD
+  Liabilities:AP  -1833.50 USD
+
+2026-09-01 * "STAPLES" "STAPLES bill"
+  invoice: "AP-0023"
+  source: "data/ap/invoices.json"
+  Expenses:Contractors  1897.00 USD
+  Liabilities:AP  -1897.00 USD
+
+2026-09-01 * "CINTAS" "CINTAS bill"
+  invoice: "AP-0024"
+  source: "data/ap/invoices.json"
+  Expenses:Telecom  1960.50 USD
+  Liabilities:AP  -1960.50 USD
+
+2026-09-01 * "GRAINGER" "GRAINGER bill"
+  invoice: "AP-0025"
+  source: "data/ap/invoices.json"
+  Expenses:Supplies  2024.00 USD
+  Liabilities:AP  -2024.00 USD
+
+2026-09-01 * "FEDEX" "FEDEX bill"
+  invoice: "AP-0026"
+  source: "data/ap/invoices.json"
+  Expenses:Insurance  2087.50 USD
+  Liabilities:AP  -2087.50 USD
+
+2026-09-01 * "UPS STORE" "UPS STORE bill"
+  invoice: "AP-0027"
+  source: "data/ap/invoices.json"
+  Expenses:Software  2151.00 USD
+  Liabilities:AP  -2151.00 USD
+
+2026-09-01 * "COMCAST" "COMCAST bill"
+  invoice: "AP-0028"
+  source: "data/ap/invoices.json"
+  Expenses:Hosting  2214.50 USD
+  Liabilities:AP  -2214.50 USD
+
+2026-09-01 * "VERIZON" "VERIZON bill"
+  invoice: "AP-0029"
+  source: "data/ap/invoices.json"
+  Expenses:Marketing  2278.00 USD
+  Liabilities:AP  -2278.00 USD
+
+2026-09-01 * "ATT BIZ" "ATT BIZ bill"
+  invoice: "AP-0030"
+  source: "data/ap/invoices.json"
+  Expenses:Travel  2341.50 USD
+  Liabilities:AP  -2341.50 USD
+
+2026-09-01 * "PG AND E" "PG AND E bill"
+  invoice: "AP-0031"
+  source: "data/ap/invoices.json"
+  Expenses:Meals  2405.00 USD
+  Liabilities:AP  -2405.00 USD
+
+2026-09-01 * "DELOITTE" "DELOITTE bill"
+  invoice: "AP-0032"
+  source: "data/ap/invoices.json"
+  Expenses:Legal  2468.50 USD
+  Liabilities:AP  -2468.50 USD
+
+2026-09-01 * "KPMG" "KPMG bill"
+  invoice: "AP-0033"
+  source: "data/ap/invoices.json"
+  Expenses:Accounting  2532.00 USD
+  Liabilities:AP  -2532.00 USD
+
+2026-09-01 * "ADOBE" "ADOBE bill"
+  invoice: "AP-0034"
+  source: "data/ap/invoices.json"
+  Expenses:Office  2595.50 USD
+  Liabilities:AP  -2595.50 USD
+
+2026-09-01 * "ATLASSIAN" "ATLASSIAN bill"
+  invoice: "AP-0035"
+  source: "data/ap/invoices.json"
+  Expenses:Utilities  2659.00 USD
+  Liabilities:AP  -2659.00 USD
+
+2026-09-01 * "TWILIO" "TWILIO bill"
+  invoice: "AP-0036"
+  source: "data/ap/invoices.json"
+  Expenses:Contractors  2722.50 USD
+  Liabilities:AP  -2722.50 USD
+
+2026-09-01 * "SEGMENT" "SEGMENT bill"
+  invoice: "AP-0037"
+  source: "data/ap/invoices.json"
+  Expenses:Telecom  2786.00 USD
+  Liabilities:AP  -2786.00 USD
+
+2026-09-01 * "DATADOG" "DATADOG bill"
+  invoice: "AP-0038"
+  source: "data/ap/invoices.json"
+  Expenses:Supplies  2849.50 USD
+  Liabilities:AP  -2849.50 USD
+
+2026-09-01 * "SNOWFLAKE" "SNOWFLAKE bill"
+  invoice: "AP-0039"
+  source: "data/ap/invoices.json"
+  Expenses:Insurance  2913.00 USD
+  Liabilities:AP  -2913.00 USD
+
+2026-09-01 * "OKTA" "OKTA bill"
+  invoice: "AP-0040"
+  source: "data/ap/invoices.json"
+  Expenses:Software  2976.50 USD
+  Liabilities:AP  -2976.50 USD
+
+2026-09-01 * "CLOUDFLARE" "CLOUDFLARE bill"
+  invoice: "AP-0041"
+  source: "data/ap/invoices.json"
+  Expenses:Hosting  3040.00 USD
+  Liabilities:AP  -3040.00 USD
+
+2026-09-01 * "STRIPE" "STRIPE bill"
+  invoice: "AP-0042"
+  source: "data/ap/invoices.json"
+  Expenses:Marketing  3103.50 USD
+  Liabilities:AP  -3103.50 USD
+
+2026-09-01 * "SALESFORCE" "SALESFORCE bill"
+  invoice: "AP-0043"
+  source: "data/ap/invoices.json"
+  Expenses:Travel  3167.00 USD
+  Liabilities:AP  -3167.00 USD
+
+2026-09-01 * "HUBSPOT" "HUBSPOT bill"
+  invoice: "AP-0044"
+  source: "data/ap/invoices.json"
+  Expenses:Meals  3230.50 USD
+  Liabilities:AP  -3230.50 USD
+
+2026-09-01 * "ZENDESK" "ZENDESK bill"
+  invoice: "AP-0045"
+  source: "data/ap/invoices.json"
+  Expenses:Legal  3294.00 USD
+  Liabilities:AP  -3294.00 USD
+
+2026-09-01 * "AIRTABLE" "AIRTABLE bill"
+  invoice: "AP-0046"
+  source: "data/ap/invoices.json"
+  Expenses:Accounting  3357.50 USD
+  Liabilities:AP  -3357.50 USD
+
+2026-09-01 * "DROPBOX" "DROPBOX bill"
+  invoice: "AP-0047"
+  source: "data/ap/invoices.json"
+  Expenses:Office  3421.00 USD
+  Liabilities:AP  -3421.00 USD
+
+2026-09-01 * "ASANA" "ASANA bill"
+  invoice: "AP-0048"
+  source: "data/ap/invoices.json"
+  Expenses:Utilities  3484.50 USD
+  Liabilities:AP  -3484.50 USD
+
+2026-09-01 * "MIRO" "MIRO bill"
+  invoice: "AP-0049"
+  source: "data/ap/invoices.json"
+  Expenses:Contractors  3548.00 USD
+  Liabilities:AP  -3548.00 USD
+
+2026-09-01 * "LOOM" "LOOM bill"
+  invoice: "AP-0050"
+  source: "data/ap/invoices.json"
+  Expenses:Telecom  3611.50 USD
+  Liabilities:AP  -3611.50 USD
+
+2026-09-01 * "LINEAR" "LINEAR bill"
+  invoice: "AP-0051"
+  source: "data/ap/invoices.json"
+  Expenses:Supplies  3675.00 USD
+  Liabilities:AP  -3675.00 USD
+
+2026-09-01 * "SENTRY" "SENTRY bill"
+  invoice: "AP-0052"
+  source: "data/ap/invoices.json"
+  Expenses:Insurance  3738.50 USD
+  Liabilities:AP  -3738.50 USD
+
+2026-09-01 * "PAGERDUTY" "PAGERDUTY bill"
+  invoice: "AP-0053"
+  source: "data/ap/invoices.json"
+  Expenses:Software  3802.00 USD
+  Liabilities:AP  -3802.00 USD
+
+2026-09-01 * "SPLITCO 1" "SPLITCO 1 bill"
+  invoice: "AP-0054"
+  source: "data/ap/invoices.json"
+  Expenses:Software  4100.00 USD
+  Liabilities:AP  -4100.00 USD
+
+2026-09-01 * "SPLITCO 1" "SPLITCO 1 bill"
+  invoice: "AP-0055"
+  source: "data/ap/invoices.json"
+  Expenses:Hosting  2050.00 USD
+  Liabilities:AP  -2050.00 USD
+
+2026-09-01 * "SPLITCO 2" "SPLITCO 2 bill"
+  invoice: "AP-0056"
+  source: "data/ap/invoices.json"
+  Expenses:Software  4220.00 USD
+  Liabilities:AP  -4220.00 USD
+
+2026-09-01 * "SPLITCO 2" "SPLITCO 2 bill"
+  invoice: "AP-0057"
+  source: "data/ap/invoices.json"
+  Expenses:Hosting  2125.00 USD
+  Liabilities:AP  -2125.00 USD
+
+2026-09-01 * "SPLITCO 3" "SPLITCO 3 bill"
+  invoice: "AP-0058"
+  source: "data/ap/invoices.json"
+  Expenses:Software  4340.00 USD
+  Liabilities:AP  -4340.00 USD
+
+2026-09-01 * "SPLITCO 3" "SPLITCO 3 bill"
+  invoice: "AP-0059"
+  source: "data/ap/invoices.json"
+  Expenses:Hosting  2200.00 USD
+  Liabilities:AP  -2200.00 USD
+
+2026-09-01 * "SPLITCO 4" "SPLITCO 4 bill"
+  invoice: "AP-0060"
+  source: "data/ap/invoices.json"
+  Expenses:Software  4460.00 USD
+  Liabilities:AP  -4460.00 USD
+
+2026-09-01 * "SPLITCO 4" "SPLITCO 4 bill"
+  invoice: "AP-0061"
+  source: "data/ap/invoices.json"
+  Expenses:Hosting  2275.00 USD
+  Liabilities:AP  -2275.00 USD
+
+2026-09-01 * "SPLITCO 5" "SPLITCO 5 bill"
+  invoice: "AP-0062"
+  source: "data/ap/invoices.json"
+  Expenses:Software  4580.00 USD
+  Liabilities:AP  -4580.00 USD
+
+2026-09-01 * "SPLITCO 5" "SPLITCO 5 bill"
+  invoice: "AP-0063"
+  source: "data/ap/invoices.json"
+  Expenses:Hosting  2350.00 USD
+  Liabilities:AP  -2350.00 USD
+
+2026-09-01 * "PARTIAL 1" "PARTIAL 1 bill"
+  invoice: "AP-0064"
+  source: "data/ap/invoices.json"
+  Expenses:Marketing  5200.00 USD
+  Liabilities:AP  -5200.00 USD
+
+2026-09-01 * "PARTIAL 2" "PARTIAL 2 bill"
+  invoice: "AP-0065"
+  source: "data/ap/invoices.json"
+  Expenses:Marketing  5340.00 USD
+  Liabilities:AP  -5340.00 USD
+
+2026-09-01 * "PARTIAL 3" "PARTIAL 3 bill"
+  invoice: "AP-0066"
+  source: "data/ap/invoices.json"
+  Expenses:Marketing  5480.00 USD
+  Liabilities:AP  -5480.00 USD
+
+2026-09-01 * "PARTIAL 4" "PARTIAL 4 bill"
+  invoice: "AP-0067"
+  source: "data/ap/invoices.json"
+  Expenses:Marketing  5620.00 USD
+  Liabilities:AP  -5620.00 USD
+
+2026-09-01 * "EUROVEND 1" "EUROVEND 1 bill"
+  invoice: "AP-0068"
+  source: "data/ap/invoices.json"
+  Expenses:Software  6100.00 USD
+  Liabilities:AP  -6100.00 USD
+
+2026-09-01 * "EUROVEND 2" "EUROVEND 2 bill"
+  invoice: "AP-0069"
+  source: "data/ap/invoices.json"
+  Expenses:Software  6310.00 USD
+  Liabilities:AP  -6310.00 USD
+
+2026-09-01 * "EUROVEND 3" "EUROVEND 3 bill"
+  invoice: "AP-0070"
+  source: "data/ap/invoices.json"
+  Expenses:Software  6520.00 USD
+  Liabilities:AP  -6520.00 USD
+
+2026-09-01 * "DISCOUNT 1" "DISCOUNT 1 bill"
+  invoice: "AP-0071"
+  source: "data/ap/invoices.json"
+  Expenses:Accounting  7100.00 USD
+  Liabilities:AP  -7100.00 USD
+
+2026-09-01 * "DISCOUNT 2" "DISCOUNT 2 bill"
+  invoice: "AP-0072"
+  source: "data/ap/invoices.json"
+  Expenses:Accounting  7260.00 USD
+  Liabilities:AP  -7260.00 USD
+
+2026-09-01 * "DISCOUNT 3" "DISCOUNT 3 bill"
+  invoice: "AP-0073"
+  source: "data/ap/invoices.json"
+  Expenses:Accounting  7420.00 USD
+  Liabilities:AP  -7420.00 USD
+
+2026-09-01 * "AWS" "AWS bill"
+  invoice: "AP-0076"
+  source: "data/ap/invoices.json"
+  Expenses:Hosting  1800.00 USD
+  Liabilities:AP  -1800.00 USD
+
+2026-09-01 * "DATADOG" "DATADOG bill"
+  invoice: "AP-0077"
+  source: "data/ap/invoices.json"
+  Expenses:Software  1800.00 USD
+  Liabilities:AP  -1800.00 USD
+
+2026-09-01 * "NORTHSTAR" "NORTHSTAR invoice"
+  invoice: "AR-0001"
+  source: "data/ap/invoices.json"
+  Assets:AR  1200.00 USD
+  Income:Subscriptions  -1200.00 USD
+
+2026-09-01 * "BLUE OCEAN" "BLUE OCEAN invoice"
+  invoice: "AR-0002"
+  source: "data/ap/invoices.json"
+  Assets:AR  1355.00 USD
+  Income:Subscriptions  -1355.00 USD
+
+2026-09-01 * "EVERGREEN" "EVERGREEN invoice"
+  invoice: "AR-0003"
+  source: "data/ap/invoices.json"
+  Assets:AR  1510.00 USD
+  Income:Subscriptions  -1510.00 USD
+
+2026-09-01 * "SUMMIT CO" "SUMMIT CO invoice"
+  invoice: "AR-0004"
+  source: "data/ap/invoices.json"
+  Assets:AR  1665.00 USD
+  Income:Subscriptions  -1665.00 USD
+
+2026-09-01 * "PINNACLE" "PINNACLE invoice"
+  invoice: "AR-0005"
+  source: "data/ap/invoices.json"
+  Assets:AR  1820.00 USD
+  Income:Subscriptions  -1820.00 USD
+
+2026-09-01 * "HORIZON" "HORIZON invoice"
+  invoice: "AR-0006"
+  source: "data/ap/invoices.json"
+  Assets:AR  1975.00 USD
+  Income:Subscriptions  -1975.00 USD
+
+2026-09-01 * "BEACON" "BEACON invoice"
+  invoice: "AR-0007"
+  source: "data/ap/invoices.json"
+  Assets:AR  2130.00 USD
+  Income:Subscriptions  -2130.00 USD
+
+2026-09-01 * "KEYSTONE" "KEYSTONE invoice"
+  invoice: "AR-0008"
+  source: "data/ap/invoices.json"
+  Assets:AR  2285.00 USD
+  Income:Subscriptions  -2285.00 USD
+
+2026-09-01 * "MERIDIAN" "MERIDIAN invoice"
+  invoice: "AR-0009"
+  source: "data/ap/invoices.json"
+  Assets:AR  2440.00 USD
+  Income:Subscriptions  -2440.00 USD
+
+2026-09-01 * "VANGUARD" "VANGUARD invoice"
+  invoice: "AR-0010"
+  source: "data/ap/invoices.json"
+  Assets:AR  2595.00 USD
+  Income:Subscriptions  -2595.00 USD
+
+2026-09-01 * "CATALYST" "CATALYST invoice"
+  invoice: "AR-0011"
+  source: "data/ap/invoices.json"
+  Assets:AR  2750.00 USD
+  Income:Subscriptions  -2750.00 USD
+
+2026-09-01 * "MOMENTUM" "MOMENTUM invoice"
+  invoice: "AR-0012"
+  source: "data/ap/invoices.json"
+  Assets:AR  2905.00 USD
+  Income:Subscriptions  -2905.00 USD
+
+2026-09-01 * "APEX" "APEX invoice"
+  invoice: "AR-0013"
+  source: "data/ap/invoices.json"
+  Assets:AR  3060.00 USD
+  Income:Subscriptions  -3060.00 USD
+
+2026-09-01 * "ZENITH" "ZENITH invoice"
+  invoice: "AR-0014"
+  source: "data/ap/invoices.json"
+  Assets:AR  3215.00 USD
+  Income:Subscriptions  -3215.00 USD
+
+2026-09-01 * "NOVA GRP" "NOVA GRP invoice"
+  invoice: "AR-0015"
+  source: "data/ap/invoices.json"
+  Assets:AR  3370.00 USD
+  Income:Subscriptions  -3370.00 USD
+
+2026-09-02 * "Dodo" "Subscription pay_001"
+  source: "data/dodo/payments.json"
+  dodo: "pay_001"
+  Assets:Dodo:Balance  1500.00 USD
+  Income:Subscriptions  -1500.00 USD
+
+2026-09-04 * "Dodo" "Subscription pay_002"
+  source: "data/dodo/payments.json"
+  dodo: "pay_002"
+  Assets:Dodo:Balance  2500.00 USD
+  Income:Subscriptions  -2500.00 USD
+
+2026-09-06 * "Dodo" "Subscription pay_003"
+  source: "data/dodo/payments.json"
+  dodo: "pay_003"
+  Assets:Dodo:Balance  1800.00 USD
+  Income:Subscriptions  -1800.00 USD
+
+2026-09-09 * "Dodo" "Subscription pay_004"
+  source: "data/dodo/payments.json"
+  dodo: "pay_004"
+  Assets:Dodo:Balance  2200.00 USD
+  Income:Subscriptions  -2200.00 USD
+
+2026-09-10 * "Dodo" "Refund ref_001"
+  source: "data/dodo/refunds.json"
+  dodo: "ref_001"
+  Income:Subscriptions  600.00 USD
+  Assets:Dodo:Balance  -600.00 USD
+
+2026-09-12 * "Dodo" "Subscription pay_005"
+  source: "data/dodo/payments.json"
+  dodo: "pay_005"
+  Assets:Dodo:Balance  1200.00 USD
+  Income:Subscriptions  -1200.00 USD
+
+2026-09-14 * "Dodo" "Refund ref_002"
+  source: "data/dodo/refunds.json"
+  dodo: "ref_002"
+  Income:Subscriptions  400.00 USD
+  Assets:Dodo:Balance  -400.00 USD
+
+2026-09-15 * "Dodo" "Subscription pay_006"
+  source: "data/dodo/payments.json"
+  dodo: "pay_006"
+  Assets:Dodo:Balance  3100.00 USD
+  Income:Subscriptions  -3100.00 USD
+
+2026-09-20 * "Dodo" "Subscription pay_007"
+  source: "data/dodo/payments.json"
+  dodo: "pay_007"
+  Assets:Dodo:Balance  1900.00 USD
+  Income:Subscriptions  -1900.00 USD
+
+2026-09-23 * "Dodo" "Subscription pay_008"
+  source: "data/dodo/payments.json"
+  dodo: "pay_008"
+  Assets:Dodo:Balance  1800.00 USD
+  Income:Subscriptions  -1800.00 USD
+
+2026-09-29 * "CONTRACTOR 1" "Cheque #1042"
+  source: "data/bank/reconciling.json"
+  reconciling: "cheque-1042"
+  Expenses:Contractors  3400.00 USD
+  Assets:Bank:Operating  -3400.00 USD
+
+2026-09-29 * "CONTRACTOR 2" "Cheque #1043"
+  source: "data/bank/reconciling.json"
+  reconciling: "cheque-1043"
+  Expenses:Contractors  1750.00 USD
+  Assets:Bank:Operating  -1750.00 USD
+
+2026-09-29 * "CONTRACTOR 3" "Cheque #1044"
+  source: "data/bank/reconciling.json"
+  reconciling: "cheque-1044"
+  Expenses:Contractors  980.00 USD
+  Assets:Bank:Operating  -980.00 USD
+
+2026-09-30 * "LATE PAYER CO" "Deposit in transit"
+  source: "data/bank/reconciling.json"
+  reconciling: "deposit-in-transit"
+  Assets:Bank:Operating  4500.00 USD
+  Assets:AR  -4500.00 USD
+
+include "2026-09/bank-rec.beancount"
+include "2026-09/accruals.beancount"
+include "2026-09/depreciation.beancount"

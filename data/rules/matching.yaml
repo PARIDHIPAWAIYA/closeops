@@ -1,0 +1,17 @@
+# Seed matching rules for recurring bank lines.
+# Each rule: match (regex, case-insensitive), account, confidence.
+- match: "GUSTO"
+  account: "Expenses:Payroll:Salaries"
+  confidence: 0.90
+- match: "WEWORK"
+  account: "Expenses:Rent"
+  confidence: 0.90
+- match: "SERVICE FEE"
+  account: "Expenses:BankFees"
+  confidence: 0.95
+- match: "INTEREST PAID"
+  account: "Income:Interest"
+  confidence: 0.95
+- match: "GITHUB|NOTION|SLACK|ZOOM|FIGMA"
+  account: "Expenses:Software"
+  confidence: 0.90

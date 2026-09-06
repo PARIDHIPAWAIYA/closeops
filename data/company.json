@@ -1,0 +1,12 @@
+{
+  "name": "Northwind Labs Inc.",
+  "currency": "USD",
+  "period": "2026-09",
+  "period_lock_before": "2026-09-01",
+  "materiality": "10000.00",
+  "bank_account": "Assets:Bank:Operating",
+  "suspense_account": "Equity:Suspense",
+  "processor_clearing": "Assets:Dodo:Balance",
+  "headcount": 25,
+  "description": "25-person B2B SaaS"
+}
