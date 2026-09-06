@@ -25,18 +25,43 @@ MAT = Decimal("10000.00")
 # fixtures
 # --------------------------------------------------------------------------- #
 
-@pytest.fixture(scope="module")
-def candidates():
-    """Candidates from the real repo data (read-only; no files written)."""
-    return bank_rec.prepare(str(REPO), write=False)
+@pytest.fixture
+def candidates(repo):
+    """Candidates for a first close, from the pre-close sandbox in ``repo``.
+
+    Derived from the same sandbox the tests act on, so candidate ids and line
+    numbers always agree with what ``apply`` will see.
+    """
+    return bank_rec.prepare(str(repo), write=False)
+
+
+def _reset_to_pre_close(root):
+    """Put a sandbox copy back into a first-close state.
+
+    The live repo carries a completed September close (posted entries and the
+    rules learned from it). These tests describe the close as it runs the first
+    time, so blank the period files and the learned rules in the copy.
+    """
+    (root / "data" / "rules" / "learned.yaml").write_text(
+        "# Learned rules appended by `closeops rerun`. Empty for tests." + chr(10) + "[]" + chr(10),
+        encoding="utf-8")
+    period = root / "ledger" / "2026-09"
+    if period.is_dir():
+        for f in period.glob("*.beancount"):
+            f.write_text(";; written by the close" + chr(10), encoding="utf-8")
 
 
 @pytest.fixture
 def repo(tmp_path):
-    """A throwaway repo copy with data/ and ledger/; prepare already run."""
+    """A throwaway repo copy with data/ and ledger/; prepare already run.
+
+    Learned rules are reset to empty so these tests describe a first close and do
+    not depend on what earlier real closes taught the live repo.
+    """
     for sub in ("data", "ledger"):
         shutil.copytree(REPO / sub, tmp_path / sub)
     (tmp_path / "exceptions").mkdir()
+    _reset_to_pre_close(tmp_path)
     bank_rec.prepare(str(tmp_path))
     return tmp_path
 
