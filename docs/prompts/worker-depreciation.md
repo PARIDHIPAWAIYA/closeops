@@ -1,9 +1,9 @@
 Task: depreciation, period 2026-09, branch close/depreciation.
-1. pip install -e .[llm] ; closeops prepare depreciation
-2. closeops decide depreciation   (if it fails for lack of credentials: write work/depreciation/decisions.json
-   by hand per docs/controls.md "depreciation" — auto-post only when score >= 0.9, otherwise exception
-   with the best candidate as proposed_entry and a one-sentence rationale citing evidence ids.)
-   Read decisions.json. If you disagree with any decision, change it and say why here in chat.
+1. pip install -e .[trace] ; closeops prepare depreciation
+2. closeops decide depreciation --packet ; read work/depreciation/packet.md and write work/depreciation/decisions.json:
+   auto-post only when score >= 0.9, otherwise exception with the best candidate as proposed_entry
+   and a one-sentence rationale citing evidence ids. Then closeops decide depreciation --validate and fix
+   every violation it lists.
    Never invent amounts. Never auto-post to Equity:Suspense.
 3. closeops apply depreciation ; closeops check
 4. Commit ledger/2026-09/depreciation.beancount and exceptions/depreciation.yaml, message

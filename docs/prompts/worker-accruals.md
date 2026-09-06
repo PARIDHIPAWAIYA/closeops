@@ -1,9 +1,9 @@
 Task: accruals, period 2026-09, branch close/accruals.
-1. pip install -e .[llm] ; closeops prepare accruals
-2. closeops decide accruals   (if it fails for lack of credentials: write work/accruals/decisions.json
-   by hand per docs/controls.md "accruals" — auto-post only when score >= 0.9, otherwise exception
-   with the best candidate as proposed_entry and a one-sentence rationale citing evidence ids.)
-   Read decisions.json. If you disagree with any decision, change it and say why here in chat.
+1. pip install -e .[trace] ; closeops prepare accruals
+2. closeops decide accruals --packet ; read work/accruals/packet.md and write work/accruals/decisions.json:
+   auto-post only when score >= 0.9, otherwise exception with the best candidate as proposed_entry
+   and a one-sentence rationale citing evidence ids. Then closeops decide accruals --validate and fix
+   every violation it lists.
    Never invent amounts. Never auto-post to Equity:Suspense.
 3. closeops apply accruals ; closeops check
 4. Commit ledger/2026-09/accruals.beancount and exceptions/accruals.yaml, message

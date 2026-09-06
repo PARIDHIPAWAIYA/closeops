@@ -6,7 +6,7 @@ Self-contained. Merges Navaneeth's `plan.md` with the verified facts and improve
 
 ## 0. Context and decision
 
-**What we build.** A month-end close that runs as pull requests. The general ledger is a plain-text Beancount file in git. AO spawns one agent worker per close task (bank reconciliation, accruals, depreciation). Each worker runs deterministic preparation, a traced Claude judgment step, deterministic validation, and opens a PR of journal entries. GitHub Actions runs ten accounting controls on every PR. Failed controls route back to the worker via AO; anything the agent cannot resolve waits in AO's "Needs You" column with a proposed fix and a confidence. The controller approves/rejects in the PR and merges. The AO board is the close dashboard. Approved exceptions become matching rules, so the second run auto-posts more than the first.
+**What we build.** A month-end close that runs as pull requests. The general ledger is a plain-text Beancount file in git. AO spawns one agent worker per close task (bank reconciliation, accruals, depreciation). Each worker runs deterministic preparation, makes the judgment calls itself from a decision packet (validated by code before anything is applied), deterministic validation, and opens a PR of journal entries. GitHub Actions runs ten accounting controls on every PR. Failed controls route back to the worker via AO; anything the agent cannot resolve waits in AO's "Needs You" column with a proposed fix and a confidence. The controller approves/rejects in the PR and merges. The AO board is the close dashboard. Approved exceptions become matching rules, so the second run auto-posts more than the first.
 
 **Why Track 2 (verified on Devpost, Sun 6 Sep).** Judges: Prateek Karnal, Maaz (AO); Rayed, Shubham, Prayag, Siddhant (Maximor); Ajay (Neatlogs). Four of seven are from an AI-close company; AO is both sponsor and judge; one judge is from an observability company. Rubric: AO usage 25 · Technical/Reliability 25 · Track fit 25 · Demo 15 · Innovation 10. This design makes AO the *runtime* (max AO score), gives accountants controls/materiality/period lock/evidence/sign-off (Maximor), and traces every model judgment (Neatlogs).
 
@@ -17,7 +17,7 @@ Self-contained. Merges Navaneeth's `plan.md` with the verified facts and improve
 **Repo working rules (owner's).** TDD — failing test first per module. Keep `plan.md` (this file, copied in) and `CONTEXT.md` current. Small commits, plain messages, **no AI attribution trailers**, no `AGENTS.md`. Push only to the hackathon repo.
 
 **Improvements over the handover plan (all in scope):**
-1. `closeops decide` — the LLM judgment step is a CLI command that calls Claude with a strict schema, is cached, unit-tested, and traced by **Neatlogs**. AO workers call it. (Original plan had no LLM in the package, so Neatlogs had nothing to trace and the close was not repeatable.)
+1. `closeops decide` — the judgment step is a CLI command with two halves: `decide --packet` renders the candidates as a compact decision packet for the AO worker (Claude Code on the team subscription — **zero API spend**), and `decide --validate` checks the worker's `decisions.json` against the schema and contract before `apply` will touch it. **No paid model API anywhere in the product.** Neatlogs traces the whole close (prepare → decide → apply → check) through `@neatlogs.span` decorators, which need no LLM call.
 2. **Dodo Payments** payout reconciliation (trap T14, control C10) — Northwind is a SaaS; reconciling processor payouts is a real close task. Test-mode API via the `dodopayments` SDK, fixture fallback.
 3. **Rule learning** — approved exceptions become rules; `closeops rerun` shows run 1 → run 2 improvement (the hackathon's stated goal: "improve reliability over time").
 4. **Four-tier funnel** in metrics — exact baseline → rules-only → agent → after review, plus proposal-acceptance rate, so the model's contribution is visible and honest.
@@ -31,7 +31,7 @@ Self-contained. Merges Navaneeth's `plan.md` with the verified facts and improve
 
 **User story.** "I type *Run September close*. Agents reconcile the bank (including the Dodo payouts), book accruals and depreciation, and open one PR each. I review entries as diffs, approve or reject the exceptions they could not resolve, merge. The close report says what was automated, what needed me, why, and what the system learned."
 
-**MVP (must ship).** Synthetic company, August closed, September open · tasks `bank-rec`, `accruals`, `depreciation` · `decide` step with Neatlogs · ten controls with PR comment · exception queue with approve/reject in PR · rule learning + rerun metric · AO orchestrator prompt that runs the close · metrics funnel · README, architecture doc, video, Devpost.
+**MVP (must ship).** Synthetic company, August closed, September open · tasks `bank-rec`, `accruals`, `depreciation` · `decide` packet/validate step with Neatlogs spans · ten controls with PR comment · exception queue with approve/reject in PR · rule learning + rerun metric · AO orchestrator prompt that runs the close · metrics funnel · README, architecture doc, video, Devpost.
 
 **Stretch (only after the runtime demo run succeeded).** `prepaids` task; `flux` commentary; approve/reject via PR-comment commands; Dodo live API if the key arrives.
 
@@ -48,7 +48,7 @@ controller ── "Run September close" ──▶ AO orchestrator (Claude Code, 
               ▼                              ▼                              ▼
      worker close/bank-rec          worker close/accruals          worker close/depreciation
      closeops prepare  (code)       prepare                        prepare
-     closeops decide   (Claude, Neatlogs-traced, cached)  ...      ...
+     closeops decide   (packet → worker judges → validate)   ...     ...
      closeops apply    (code: validate, render, bean-check)
      commit → gh pr create
               │
@@ -70,7 +70,7 @@ controller ── "Run September close" ──▶ AO orchestrator (Claude Code, 
 closeops/
   README.md  plan.md  CONTEXT.md  .env.example  .gitignore (work/ .env __pycache__ .venv)
   pyproject.toml            # package closeops; deps beancount>=3.2 pyyaml click python-dateutil
-                            # extras: test=[pytest] llm=[anthropic,neatlogs] dodo=[dodopayments]
+                            # extras: test=[pytest] trace=[neatlogs] dodo=[dodopayments]
   ledger/main.beancount     # options, accounts, opening balances, August, Sep booked bills/invoices, includes
   ledger/2026-09/{bank-rec,accruals,depreciation}.beancount   # written by workers
   data/company.json  data/bank/sep-2026.csv  data/bank/statement-balance.json
@@ -84,7 +84,7 @@ closeops/
     cli.py        # prepare | decide | apply | check | report | baseline | rerun | status
     ledger.py     # load, balances by account/date, open items, render entries, bean-check
     models.py     # StatementLine Invoice Asset Payout Candidate Decision Exception ControlResult
-    llm.py        # Anthropic client, schema, batching, cache, cost meter, Neatlogs init
+    decide.py     # packet renderer + decisions.json validator; trace.py: Neatlogs init/spans
     tasks/{bank_rec,accruals,depreciation}.py
     controls.py   # C1–C10
     report.py     # close-report.md + metrics.json
@@ -162,7 +162,7 @@ Beancount 3.2.x, Python 3.12 (`pip install beancount`). Transactions: `2026-09-1
 ## 6. Close tasks — one contract, three commands (+ decide)
 
 - `closeops prepare <task>` → `work/<task>/candidates.json` (deterministic).
-- `closeops decide <task>` → `work/<task>/decisions.json` (Claude; see §7).
+- `closeops decide <task> --packet` → `work/<task>/packet.md`; the worker writes `decisions.json`; `decide --validate` gates it (see §7).
 - `closeops apply <task>` → validates decisions, renders `ledger/2026-09/<task>.beancount` + `exceptions/<task>.yaml`, learns rules from approved exceptions, runs bean-check (deterministic).
 
 **Decision contract (enforced in `apply`, regardless of what `decide` said).** Per line: `{choice: <candidate_id>|"exception", rationale, confidence}`. Auto-post only if the chosen candidate's score ≥ 0.9. Anything else → exception with the chosen candidate as `proposed_entry`. The model may **demote** a ≥0.9 candidate to exception (duplicate, conflicting description). Never invent amounts. Never auto-post to Suspense.
@@ -180,18 +180,16 @@ Beancount 3.2.x, Python 3.12 (`pip install beancount`). Transactions: `2026-09-1
 
 ---
 
-## 7. `closeops decide` — the model step (`closeops/llm.py`)
+## 7. `closeops decide` — the judgment step, zero-cost (`closeops/decide.py`)
 
-- Client: `anthropic.Anthropic()` zero-arg (resolves `ANTHROPIC_API_KEY`, else the `ant auth login` profile — check `ant auth status` in Step 0). Model `claude-opus-5`; `thinking={"type":"adaptive"}`; `output_config={"effort":"medium","format":{"type":"json_schema", ...decisions schema...}}`; streaming, `get_final_message()`; `betas=["server-side-fallback-2026-07-01"], fallbacks="default"` so a refusal cannot stall a close; `max_tokens` 16000.
-- Prompt: stable prefix (decision contract, chart of accounts, rules, task guidance from `docs/controls.md`) with `cache_control` breakpoint; then a batch of ≤20 lines with all candidates and evidence. Check `cache_read_input_tokens > 0` from batch 2.
-- Cache: `work/<task>/decisions.<sha256(candidates)>.json`; `--no-cache` forces.
-- Cost meter: tokens in/out/cached, USD at list price, wall-clock → `metrics.json.llm.<task>`. `CLOSEOPS_MAX_USD` (default 5) aborts.
-- Fallback: `--from-fixture` loads `tests/fixtures/decisions-<task>.json` (no key needed). Worker prompt says: if `decide` fails, write decisions by hand per the contract.
-- **Neatlogs (verified against neatlogs 1.4.21 on this machine):** at the top of `cli.py`, before importing `anthropic`: `neatlogs.init(api_key=os.environ.get("NEATLOGS_API_KEY"), workflow_name="closeops", instrumentations=["anthropic"], tags=["syndicate", period])`; decorate `decide()` with `@neatlogs.span(kind="WORKFLOW", name=f"decide:{task}", tags=[task], session_id=f"close-{period}")`. `neatlogs.extract_trace_context()` exists — use it to capture the trace id for `decisions.json` and each exception's `trace:`; fall back to `workflow_name+timestamp` if it returns nothing. Skip init entirely if the env var is unset.
-- **Verified SDK facts (Python 3.10 build machine):** beancount 3.2.3 → `python -m beancount.scripts.check FILE`; anthropic 1.4.0 → `client.messages.parse()` available for schema-validated decisions; dodopayments 1.115.0 → `client.payouts.list()`, `client.payouts.breakup()`, `client.payments.list()`, `client.refunds.list()`, `client.balances.retrieve_ledger()`; `environment="test_mode"` → `https://test.dodopayments.com`.
-- Tests: fake `decide_fn` injected; malformed model output rejected by schema; `apply` rejects an auto-post below 0.9; duplicate demotion honored; cache hit path.
+**Constraint: nothing in this project is paid for.** Model reasoning happens only inside AO worker sessions (Claude Code on the existing Team subscription). The Python package never calls a paid API.
 
----
+- `closeops decide <task> --packet` → writes `work/<task>/packet.md`: the decision contract, chart of accounts, rules, and every statement line with its ranked candidates and evidence ids, in ≤20-line chunks. The worker reads the packet and writes `work/<task>/decisions.json`.
+- `closeops decide <task> --validate` → schema check (`choice`, `rationale`, `confidence` per line; every line covered; `choice` is a real candidate id or `"exception"`), contract check (auto-post only when the chosen candidate score ≥ 0.9; demotions allowed; no Suspense auto-posts; no invented amounts — postings must equal candidate postings). Exit 1 with a readable list of violations; `apply` refuses to run until validate passes.
+- `decisions.json` records `decided_by: worker`, the AO session id (from `AO_SESSION_ID` env if present) and a timestamp, so every judgment is attributable.
+- Tests: fixture `tests/fixtures/decisions-bank-rec.json` (hand-written, covers T1–T15); validate rejects an auto-post below 0.9, an unknown candidate id, a missing line, a Suspense auto-post; `apply` refuses unvalidated decisions.
+- **Neatlogs (free tier; verified against neatlogs 1.4.21 on this machine):** at the top of `closeops/cli.py`: `neatlogs.init(api_key=os.environ.get("NEATLOGS_API_KEY"), workflow_name="closeops", tags=["syndicate", period])`, skipped entirely when the env var is unset. Decorate `prepare`, `decide`, `apply` and `check` with `@neatlogs.span(kind="WORKFLOW", name=f"<step>:{task}", tags=[task], session_id=f"close-{period}")`, and each control function with `@neatlogs.span(kind="TOOL", name="C7")`, so a close run shows as one session with per-step spans, candidate counts, decision counts and control outcomes as captured output. Use `neatlogs.extract_trace_context()` to record the trace id into `decisions.json` and each exception's `trace:`; fall back to `workflow_name+timestamp`.
+- **Verified SDK facts (Python 3.10 build machine):** beancount 3.2.3 → `python -m beancount.scripts.check FILE`; dodopayments 1.115.0 → `client.payouts.list()`, `client.payouts.breakup()`, `client.payments.list()`, `client.refunds.list()`, `client.balances.retrieve_ledger()`; `environment="test_mode"` → `https://test.dodopayments.com` (test mode moves no money). `anthropic` is **not** a dependency.
 
 ## 8. Controls (`closeops check`), CLI, CI
 
@@ -208,24 +206,24 @@ Beancount 3.2.x, Python 3.12 (`pip install beancount`). Transactions: `2026-09-1
 | C9 | No `status: open` in `exceptions/*.yaml` | one open |
 | **C10** | `Assets:Dodo:Balance` == Σ payments − Σ refunds − Σ paid-out gross | a payout dropped |
 
-`close-report.md`: header · control table · metrics block (funnel, run 1/run 2, LLM cost) · per-task entries table · exceptions table · reconciling items. Collapse long tables in `<details>` so the PR comment stays readable.
+`close-report.md`: header · control table · metrics block (funnel, run 1/run 2) · per-task entries table · exceptions table · reconciling items. Collapse long tables in `<details>` so the PR comment stays readable.
 
 **CLI:** `closeops prepare|decide|apply <task>` · `check [--json]` · `report` · `baseline bank-rec` · `rerun bank-rec` · `status`. Entry point `closeops = closeops.cli:main`; workers may use `python -m closeops.cli`.
 
-**CI** `.github/workflows/controls.yml` (on PR + push main; `contents: read`, `pull-requests: write`): checkout → setup-python 3.12 → `pip install -e .[test,llm,dodo]` → `pytest -q` → `closeops check --json` with `continue-on-error` capturing exit → `gh pr comment --body-file close-report.md` on PRs → fail if controls failed. No secrets in CI: `decide` tests use the fake.
+**CI** `.github/workflows/controls.yml` (on PR + push main; `contents: read`, `pull-requests: write`): checkout → setup-python 3.12 → `pip install -e .[test,trace,dodo]` → `pytest -q` → `closeops check --json` with `continue-on-error` capturing exit → `gh pr comment --body-file close-report.md` on PRs → fail if controls failed. No secrets in CI: `decide` tests use the fake.
 
 ---
 
 ## 9. Build plan (IST, from 12:00 Sunday)
 
 ### Step 0 — 12:00–13:00, human, **screen-record it**
-1. `npm install -g @anthropic-ai/claude-code` (or installer); `claude` once; `ant auth status` (confirms the LLM credential path).
+1. `claude` once and `/login` so AO-spawned sessions authenticate on the Team subscription (no API key, no spend).
 2. `gh auth status`.
 3. AO desktop for Windows from the AO releases page (current build); launch; `ao doctor` if CLI present. If it fails after 30 min → §13 fallback, ask in Discord `#syndicate-help`.
 4. `python -m pip install beancount pyyaml click pytest anthropic neatlogs dodopayments`.
-5. Accounts: Neatlogs (key → `NEATLOGS_API_KEY`), Dodo signup + test-mode key + fast-track ask in Discord (`DODO_PAYMENTS_API_KEY`, optional). `.env` local only.
+5. Accounts (all free tiers): Neatlogs (key → `NEATLOGS_API_KEY`), Dodo test mode (`DODO_PAYMENTS_API_KEY`, optional). No Anthropic API key: model work runs on the Team subscription inside AO. `.env` local only.
 6. `mkdir C:\Users\pawai\closeops && cd … && git init -b main`; add README (2 lines), plan.md (this), CONTEXT.md, `.gitignore`, `.env.example`; `git commit -m "Initial scaffold"`; `gh repo create <account>/closeops --public --source=. --push`; add teammate as collaborator.
-7. AO: Add project → repo path; worker agent Claude Code; base branch main; setup command `pip install -e .[test,llm,dodo]`. Spawn orchestrator (kind=orchestrator, mode=chat), paste the BUILD prompt (§10.1).
+7. AO: Add project → repo path; worker agent Claude Code; base branch main; setup command `pip install -e .[test,trace,dodo]`. Spawn orchestrator (kind=orchestrator, mode=chat), paste the BUILD prompt (§10.1).
 
 ### Wave 1 — 13:00–16:00 (parallel)
 - **`data-ledger`** (`build/data-ledger`): `scripts/gen_data.py` (seeded; bank CSV with derived running balance; August entries; Sep booked bills/AR; cheque + deposit in transit; T1–T15 incl. Dodo payouts; invoices; assets; Dodo fixtures via `fetch_dodo.py --fixture`), `ledger/main.beancount`, `models.py`, `ledger.py`, `rules.py` (load only), tests. Acceptance: bean-check passes; TB zero; CSV closing = statement-balance; `verify_data.py` prints trap counts.
@@ -234,7 +232,7 @@ Merge order: data-ledger, then controls-ci rebased.
 
 ### Wave 2 — 16:00–20:00 (parallel, after wave 1 merges)
 - **`bank-rec`**: `tasks/bank_rec.py` (incl. `payout` candidates), `baseline.py` (exact + rules-only tiers), `rules.py` learning + `rerun`, CLI `prepare/apply/baseline/rerun`, tests T1–T15. Acceptance: candidates for all lines; fixture decisions apply cleanly; baseline block written; rerun with a learned rule raises auto-rate.
-- **`decide-llm`**: `llm.py`, `decide` CLI, schema, cache, cost meter, Neatlogs init, tests with fake. Acceptance: on real candidates produces schema-valid decisions; cache hit on second run; trace visible in Neatlogs.
+- **`decide-llm`** (name kept ≤20 chars): `decide.py` packet renderer + validator, `trace.py` Neatlogs init and spans on all steps, tests. Acceptance: packet renders for real candidates; fixture decisions pass validate; each planted violation is rejected; a run appears in Neatlogs when the key is set.
 - **`period-entries`**: accruals + depreciation + tests. Acceptance: schedules match hand-computed numbers.
 - **`docs`**: README (setup, run, architecture, controls, metrics, sponsor tools, "why git"), `docs/*.md`, all prompts, demo script.
 
@@ -244,7 +242,7 @@ Spawn orchestrator CLOSE session with §10.2. Three close workers run prepare �
 ### Step 4 — 22:30–02:45
 22:30–00:30 README results, Neatlogs + Dodo + AO screenshots, `CONTEXT.md`. 00:30–02:00 video (§11), Devpost (§12). 02:00–02:45 buffer, tag `v0.1.0`, **submit**. Nothing new after 02:15.
 
-**Cut order if behind at 20:00:** Dodo live API (fixture stays) → rule learning/rerun → funnel tiers (keep baseline vs agent) → docs worker (README by hand) → depreciation. **Never cut:** `decide` + Neatlogs, the recorded runtime close, the controls, bank-rec + one other task.
+**Cut order if behind at 20:00:** Dodo live API (fixture stays) → rule learning/rerun → funnel tiers (keep baseline vs agent) → docs worker (README by hand) → depreciation. **Never cut:** `decide --validate` + Neatlogs spans, the recorded runtime close, the controls, bank-rec + one other task.
 
 ---
 
@@ -279,11 +277,11 @@ Report per task: entries proposed, exceptions open, PR link.
 ### 10.3 Worker template `worker-<task>.md`
 ```
 Task: <task>, period 2026-09, branch close/<task>.
-1. pip install -e .[llm] ; closeops prepare <task>
-2. closeops decide <task>   (if it fails for lack of credentials: write work/<task>/decisions.json
-   by hand per docs/controls.md "<task>" — auto-post only when score >= 0.9, otherwise exception
-   with the best candidate as proposed_entry and a one-sentence rationale citing evidence ids.)
-   Read decisions.json. If you disagree with any decision, change it and say why here in chat.
+1. pip install -e .[trace] ; closeops prepare <task>
+2. closeops decide <task> --packet ; read work/<task>/packet.md and write work/<task>/decisions.json:
+   auto-post only when score >= 0.9, otherwise exception with the best candidate as proposed_entry
+   and a one-sentence rationale citing evidence ids. Then closeops decide <task> --validate and fix
+   every violation it lists.
    Never invent amounts. Never auto-post to Equity:Suspense.
 3. closeops apply <task> ; closeops check
 4. Commit ledger/2026-09/<task>.beancount and exceptions/<task>.yaml, message
@@ -297,7 +295,7 @@ Task: <task>, period 2026-09, branch close/<task>.
 2. Controller edits `exceptions/bank-rec.yaml`: approve splits/partials/FX/discount/payout-fee; reject the duplicate and the Shenzhen POS with notes; commit to the branch.
 3. Via AO chat: "exceptions reviewed, apply and push" → worker re-runs `apply` (learns rules), CI green, merge from AO.
 4. Accruals (one materiality item) same; depreciation green first time.
-5. Report PR: ten controls green, funnel + run 1/run 2 + LLM cost.
+5. Report PR: ten controls green, funnel + run 1/run 2.
 
 ---
 
@@ -309,7 +307,7 @@ Task: <task>, period 2026-09, branch close/<task>.
 | 0:20 | AO board during the build; session list | "Every part was built by AO workers on their own branches: data, controls, bank rec, the decision step, period entries, docs. CI comments went back to the owning worker." |
 | 0:50 | Orchestrator chat: "Run September close"; three workers appear | "At runtime, AO is the product." |
 | 1:15 | PR diff of `bank-rec.beancount`; CI comment, C9 red | "Every entry links to its evidence. Ten controls on every PR. Twenty lines needed a human." |
-| 1:45 | **Neatlogs trace** of one decision → the exception it produced | "Every judgment the model made is traced and linked from the exception." |
+| 1:45 | **Neatlogs** session: prepare → decide → apply → check spans, one exception's `trace:` id | "Every step of the close is traced, and every exception links to its trace." |
 | 2:00 | Needs You; approve a split, reject the duplicate; push; green; merge | "The agent proposes with a confidence and waits. Only approved entries reach the ledger." |
 | 2:35 | **Dodo payout** line reconciled: net = gross − refunds − fee, fee booked | "Processor payouts reconcile against Dodo's payout records; the fee books itself." |
 | 2:55 | Accruals PR (materiality exception; October bill refused); depreciation green | |
@@ -322,7 +320,7 @@ Task: <task>, period 2026-09, branch close/<task>.
 
 ## 12. Devpost
 
-Name **Close-as-Code** · tagline "Month-end close that runs as reviewed pull requests, orchestrated by AO." · Track 2 · problem/users (§1) · what it does (§0) · how we built it with AO (build waves, session list, PR/CI loop; AO as runtime) · architecture (§2, sandwich, ten controls, exception contract) · evaluation and results (funnel, run 1→2, proposal acceptance, controls green, LLM cost) · reliability (Decimal money, bean-check on every apply, 0.9 threshold, suspense zero, period lock, duplicates, human gate on materiality and every exception) · **sponsor tools** (AO runtime; Neatlogs traces every judgment, linked from exceptions; Dodo Payments test-mode API as payout source — or fixture, stated) · what's next (ERP adapters, prepaids, flux) · team · links.
+Name **Close-as-Code** · tagline "Month-end close that runs as reviewed pull requests, orchestrated by AO." · Track 2 · problem/users (§1) · what it does (§0) · how we built it with AO (build waves, session list, PR/CI loop; AO as runtime) · architecture (§2, sandwich, ten controls, exception contract) · evaluation and results (funnel, run 1→2, proposal acceptance, controls green) · reliability (Decimal money, bean-check on every apply, 0.9 threshold, suspense zero, period lock, duplicates, human gate on materiality and every exception) · **sponsor tools** (AO runtime; Neatlogs traces every judgment, linked from exceptions; Dodo Payments test-mode API as payout source — or fixture, stated) · what's next (ERP adapters, prepaids, flux) · team · links.
 
 Evidence for the AO section: `ao session ls --all` screenshot (build + close workers), Kanban with Needs You populated, one red and one green CI comment, merged PR list.
 
@@ -334,7 +332,7 @@ Evidence for the AO section: `ao session ls --all` screenshot (build + close wor
 |---|---|
 | AO desktop fails on Windows | Exhaust Windows path 30 min + Discord; else run `claude` in `git worktree` folders, one branch/PR per task, screen-recorded; state honestly |
 | Workers can't find `closeops` | `python -m closeops.cli`; AO setup command installs `-e .` |
-| No LLM credential | `decide --from-fixture`; worker writes decisions by hand; README says so |
+| Team-plan usage cap hit mid-build | Stagger workers (2–3 at a time); the cap resets on a rolling window; nothing is billed |
 | Neatlogs SDK API differs from notes | Keep init in one function; if `span` missing, rely on auto-instrumentation only |
 | Dodo key not approved | Fixture (default) — same schema, stated in README |
 | Beancount install fails | `beancount==2.3.6`; last resort hand parser for our subset |
@@ -347,7 +345,7 @@ Evidence for the AO section: `ao session ls --all` screenshot (build + close wor
 ## 14. Definition of done / verification
 
 - `pytest -q` green locally and in CI (no keys in CI).
-- `closeops decide bank-rec` → schema-valid decisions; second batch `cache_read_input_tokens > 0`; trace at app.neatlogs.com tagged `bank-rec`; `metrics.json.llm` populated.
+- `closeops decide bank-rec --packet` then a worker-written `decisions.json` passes `--validate`; the close shows at app.neatlogs.com as one session with prepare/decide/apply/check spans tagged `bank-rec`.
 - `closeops check` on `main` after the close: **ten** controls pass.
 - Dodo: both `DODO PAYOUT` lines reconciled with fee split; tampering a payout fails C10.
 - `metrics.json`: funnel four tiers; `proposal_acceptance_rate`; `run2.auto_rate > run1.auto_rate`.

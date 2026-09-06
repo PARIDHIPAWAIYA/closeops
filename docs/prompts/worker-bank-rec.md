@@ -1,9 +1,9 @@
 Task: bank-rec, period 2026-09, branch close/bank-rec.
-1. pip install -e .[llm] ; closeops prepare bank-rec
-2. closeops decide bank-rec   (if it fails for lack of credentials: write work/bank-rec/decisions.json
-   by hand per docs/controls.md "bank-rec" — auto-post only when score >= 0.9, otherwise exception
-   with the best candidate as proposed_entry and a one-sentence rationale citing evidence ids.)
-   Read decisions.json. If you disagree with any decision, change it and say why here in chat.
+1. pip install -e .[trace] ; closeops prepare bank-rec
+2. closeops decide bank-rec --packet ; read work/bank-rec/packet.md and write work/bank-rec/decisions.json:
+   auto-post only when score >= 0.9, otherwise exception with the best candidate as proposed_entry
+   and a one-sentence rationale citing evidence ids. Then closeops decide bank-rec --validate and fix
+   every violation it lists.
    Never invent amounts. Never auto-post to Equity:Suspense.
 3. closeops apply bank-rec ; closeops check
 4. Commit ledger/2026-09/bank-rec.beancount and exceptions/bank-rec.yaml, message
