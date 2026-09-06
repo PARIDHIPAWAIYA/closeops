@@ -12,7 +12,7 @@ import sys
 
 import click
 
-from . import controls, report
+from . import controls, decide as decide_mod, report, trace
 from .tasks import accruals as accruals_task
 from .tasks import depreciation as depreciation_task
 
@@ -35,6 +35,9 @@ def _task_module(task):
 @click.group()
 def main():
     """Month-end close that runs as reviewed pull requests."""
+    # Neatlogs tracing: a no-op unless NEATLOGS_API_KEY is set (zero spend, no key
+    # needed in CI). Wired here so every subcommand shows up in one close session.
+    trace.init()
 
 
 @main.command()
@@ -69,6 +72,7 @@ def apply(task, repo):
 @main.command()
 @click.option("--json", "as_json", is_flag=True, help="Emit results as JSON.")
 @click.option("--repo", default=".", help="Repository root.")
+@trace.workflow_span("check", "close")
 def check(as_json, repo):
     """Run the ten accounting controls; exit non-zero if any fail."""
     results = controls.run_all(repo)
@@ -88,6 +92,73 @@ def report_cmd(repo):
     passed = metrics["controls"]["passed"]
     total = metrics["controls"]["total"]
     click.echo(f"Wrote close-report.md and metrics.json ({passed}/{total} controls passed).")
+
+
+@main.command()
+@click.argument("task")
+@click.option("--packet", "as_packet", is_flag=True,
+              help="Render work/<task>/packet.md for the worker.")
+@click.option("--validate", "as_validate", is_flag=True,
+              help="Validate work/<task>/decisions.json against the contract.")
+@click.option("--repo", default=".", help="Repository root.")
+def decide(task, as_packet, as_validate, repo):
+    """Render the decision packet or validate the worker's decisions."""
+    if as_packet == as_validate:
+        raise click.UsageError("pass exactly one of --packet or --validate")
+
+    @trace.workflow_span("decide", task)
+    def _run():
+        return _decide(task, as_packet, repo)
+
+    _run()
+
+
+def _decide(task, as_packet, repo):
+    if as_packet:
+        candidates = decide_mod.load_json(decide_mod.candidates_path(task, repo))
+        company = controls.load_company(_company_path(repo))
+        rules = _load_rules(repo)
+        packet = decide_mod.render_packet(candidates, company=company, rules=rules)
+        out_path = decide_mod.packet_path(task, repo)
+        decide_mod.write_text(out_path, packet)
+        n = len(candidates.get("lines", []))
+        click.echo(f"Wrote {out_path} ({n} line(s)).")
+        return
+
+    # --validate
+    candidates = decide_mod.load_json(decide_mod.candidates_path(task, repo))
+    decisions = decide_mod.load_json(decide_mod.decisions_path(task, repo))
+    company = controls.load_company(_company_path(repo))
+    suspense = company.get("suspense_account") or decide_mod.DEFAULT_SUSPENSE
+    violations = decide_mod.validate_decisions(candidates, decisions, suspense)
+    if violations:
+        click.echo(f"{len(violations)} violation(s):")
+        for v in violations:
+            click.echo(f"  - {v}")
+        sys.exit(1)
+    stamped = decide_mod.stamp_provenance(decisions)
+    decide_mod.write_text(
+        decide_mod.decisions_path(task, repo),
+        json.dumps(stamped, indent=2) + "\n")
+    click.echo(f"decisions.json valid: {len(candidates.get('lines', []))} line(s), "
+               f"decided_by={stamped['decided_by']} session={stamped['session_id']}.")
+
+
+def _company_path(repo):
+    from pathlib import Path
+    return Path(repo) / "data" / "company.json"
+
+
+def _load_rules(repo):
+    from pathlib import Path
+    from . import rules as rules_mod
+    root = Path(repo)
+    matching = root / "data" / "rules" / "matching.yaml"
+    learned = root / "data" / "rules" / "learned.yaml"
+    try:
+        return rules_mod.load_rules(matching, learned)
+    except Exception:
+        return []
 
 
 @main.command()
