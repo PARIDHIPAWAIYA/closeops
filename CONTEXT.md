@@ -56,8 +56,9 @@ Running log. Newest entry first. Keep it short: what is done, what is next, deci
   * `github.head_ref` starts with `close/`, OR
   * `github.event.pull_request.title` starts with `close(`, OR
   * push to main AND a `ledger/2026-09/*.beancount` file has a real transaction
-    (line begins with a date and has a `*`/`!` flag: `^YYYY-MM-DD +[*!]`), detected by
-    the `Detect real close entries on main` shell step.
+    (line begins with a date and has a `*`/`!` flag or the `txn` keyword:
+    `^YYYY-MM-DD +(\*|!|txn)`), detected by the `Detect real close entries on main` shell step.
+    Scope is the 2026-09 include files only (where Wave 2 close work lands), per spec.
 - Result: `build/*` PRs stay green when only controls fail; `close/*` branches / `close(` PRs
   and post-entry pushes to main still fail on controls.
 
