@@ -91,9 +91,14 @@ Running log. Newest entry first. Keep it short: what is done, what is next, deci
   agent(reference decider) 81.0% < after-review 100% (monotonic; agent's lower raw
   count vs a naive rules bot is the safety win — it holds material/ambiguous items
   and demotes duplicates). Writes `funnel` into metrics.json.
-- `closeops/rules.py`: `learn_from_exceptions` (approved exception + a real
-  expense/income account → rule keyed on a distinctive description token),
-  `save_learned`. `rerun` learns then re-scores: run1 81.0% → run2 87.1%.
+- `closeops/rules.py`: `learn_from_exceptions` learns **safely** — only from an
+  approved exception whose kind is `none`/`rule`, with exactly two postings (bank
+  + one real expense/income account), below materiality, and not already covered
+  by an existing rule. Never fx/split/partial/payout/duplicate (those would
+  auto-post a whole payment/payout to the wrong account). `save_learned`. `rerun`
+  learns then re-scores: run1 81.0% → run2 ~83.6% (honest; e.g. reclassified
+  unknown-payees SHENZHEN/LAGOS → Expenses:Office). Material lines (e.g. GUSTO
+  12,500) stay exceptions in run 2.
 - `closeops/cli.py`: registered `bank-rec` in the prepare/apply registry; added
   `baseline` and `rerun` subcommands. check/report/status untouched.
 - Contract/C7 note: controls-ci's C7 uses `statement + Σoutstanding − Σdeposits`;
@@ -105,9 +110,16 @@ Running log. Newest entry first. Keep it short: what is done, what is next, deci
   (one per T1–T15, `<0.9 never auto-posts`, duplicate/T15 demotion honored,
   material→approval, reconciling, baseline monotonic, rerun raises auto-rate).
   100 tests pass.
-- Learned rules are a demonstration heuristic (category→recurring rule); may
-  over-generalize (e.g. EUROVEND→Expenses:FX), the human still reviews.
-- Next: open PR `build: bank-rec`; address CI comments. decide-llm consumes
+- Provenance: apply copies decisions.json top-level `trace`/`decided_by`/
+  `session_id`/`timestamp` (stamped by decide-llm `--validate`) onto every entry
+  and exception; falls back to constants when absent. Exceptions carry `kind`.
+- Rejected exceptions stay unposted (the cash moved but has no correct account
+  yet), so C7 fails until the controller supplies a corrected proposed_entry and
+  approves — apply prints "N rejected line(s) remain unposted; C7 will fail...".
+- Review round applied (PR #7): safe rule learning, provenance copy, rejected-line
+  message, rebased onto origin/main. 101 tests pass.
+- Next: address CI comments; re-rebase if decide-llm (PR #6) merges — cli.py will
+  conflict (keep both import lines and both command blocks). decide-llm consumes
   `candidates.json` and writes the real `decisions.json` (this worker did not
   touch decide.py/trace.py).
 
