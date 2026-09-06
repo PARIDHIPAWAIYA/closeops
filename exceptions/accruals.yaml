@@ -14,5 +14,6 @@
   confidence: '0.90'
   decided_by: closeops-decide
   trace: ''
-  status: open
-  reviewer_note: ''
+  status: approved
+  reviewer_note: 'Approved by controller: Rickard & Co September legal retainer, engagement
+    letter on file. Material item, signed off per policy.'
