@@ -2,6 +2,33 @@
 
 Running log. Newest entry first. Keep it short: what is done, what is next, decisions.
 
+## Sun 6 Sep — runtime close: accruals (branch close/accruals)
+- Ran the accruals close per docs/prompts/worker-accruals.md: prepare -> decide
+  (packet/validate) -> apply -> check on branch close/accruals off main.
+- prepare: 6 unbooked Sep-service bills; INV-007 (service_period 2026-10) skipped.
+- decide: accruals uses deterministic materiality routing in apply (no per-line
+  candidate scoring), so the packet renders 0 lines and decisions.json is empty;
+  `decide --validate` passes and stamps provenance (decided_by=worker, session,
+  trace).
+- apply: 5 non-material accruals auto-posted (17,850.00 total: Hosting 3,200,
+  Contractors 6,800, Marketing 4,500, Utilities 1,250, Travel 2,100), all Dr
+  expense / Cr Liabilities:Accrued:Expenses dated 2026-09-30. The 14,500 legal
+  retainer (INV-001) is >= materiality 10,000 -> routed to exceptions/accruals.yaml
+  as one OPEN exception AC-001 for controller approval (exercises C5 + C9).
+- check: C1-C6, C8 pass. C9 FAIL (1 open: AC-001) — the expected materiality
+  exception awaiting a human; NOT resolved by the worker. C7/C10 FAIL are
+  pre-bank-rec cross-task failures (September bank/Dodo postings not on this branch),
+  documented earlier and outside accruals scope.
+- Committed ledger/2026-09/accruals.beancount + exceptions/accruals.yaml
+  ("close(2026-09): accruals entries"). 128 tests pass. PR #8 opened.
+- Controller approved AC-001 (status: approved, reviewer_note) on close/accruals.
+  Pulled, re-ran apply -> the 14,500 legal retainer books with an `approved-by`
+  meta (6 entries booked total, 0 open exceptions). Committed
+  ("close(2026-09): book approved accrual AC-001") and pushed.
+- CI on PR #8: C1-C6, C8, C9 PASS (C9 now green — no open exceptions). C7/C10
+  remain red only because close/bank-rec runtime postings are not on this branch
+  (accruals posts nothing to Bank/Dodo); expected, resolves on merge. No
+  accruals-side fix. Task complete.
 ## Sun 6 Sep — runtime close: bank-rec (branch close/bank-rec, PR #9)
 - Ran the close worker per docs/prompts/worker-bank-rec.md: prepare -> decide
   --packet -> wrote work/bank-rec/decisions.json (116 lines) -> decide --validate

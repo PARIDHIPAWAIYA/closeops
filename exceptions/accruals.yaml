@@ -1,0 +1,19 @@
+- id: AC-001
+  task: accruals
+  source: data/ap/invoices.json#INV-001
+  issue: INV-001 (14500.00 "Rickard & Co") accrual is at/above materiality 10000.00
+    and needs controller approval
+  proposed_entry:
+    date: '2026-09-30'
+    narration: Accrue September Legal
+    postings:
+    - account: Expenses:Legal
+      amount: '14500.00'
+    - account: Liabilities:Accrued:Expenses
+      amount: '-14500.00'
+  confidence: '0.90'
+  decided_by: closeops-decide
+  trace: ''
+  status: approved
+  reviewer_note: 'Approved by controller: Rickard & Co September legal retainer, engagement
+    letter on file. Material item, signed off per policy.'
