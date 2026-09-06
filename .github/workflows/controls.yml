@@ -41,8 +41,25 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh pr comment "${{ github.event.pull_request.number }}" --body-file close-report.md
 
+      - name: Detect real close entries on main
+        id: ledger
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          gate=false
+          if ls ledger/2026-09/*.beancount >/dev/null 2>&1; then
+            if grep -rEq '^[0-9]{4}-[0-9]{2}-[0-9]{2}[[:space:]]+(\*|!|txn)' ledger/2026-09/*.beancount; then
+              gate=true
+            fi
+          fi
+          echo "gate=$gate" >> "$GITHUB_OUTPUT"
+
       - name: Fail if controls failed
-        if: steps.controls.outcome == 'failure'
+        if: >-
+          steps.controls.outcome == 'failure' && (
+            startsWith(github.head_ref, 'close/') ||
+            startsWith(github.event.pull_request.title, 'close(') ||
+            steps.ledger.outputs.gate == 'true'
+          )
         run: |
           echo "One or more controls failed."
           exit 1

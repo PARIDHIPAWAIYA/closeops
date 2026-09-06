@@ -71,6 +71,23 @@ Running log. Newest entry first. Keep it short: what is done, what is next, deci
   ledger-only, not on the September statement.
 - Next: controls-ci worker (C1–C10, report, cli), then Wave 2 bank-rec.
 
+## Sun 6 Sep — ci-gate
+- Branch `build/ci-gate`. Only `.github/workflows/controls.yml` + CONTEXT.md.
+- Problem: main was red because C7/C10 fail until Sep bank-rec/Dodo entries exist,
+  making every `build/*` PR red for unrelated reasons.
+- Fix: controls are informational on `build/*` PRs but still gate real close work.
+  Tests still gate EVERY PR unconditionally (no continue-on-error on Tests).
+  Controls step keeps `continue-on-error`; Report + PR comment still post on every PR.
+- `Fail if controls failed` now conditional — fails the job only when controls failed AND:
+  * `github.head_ref` starts with `close/`, OR
+  * `github.event.pull_request.title` starts with `close(`, OR
+  * push to main AND a `ledger/2026-09/*.beancount` file has a real transaction
+    (line begins with a date and has a `*`/`!` flag or the `txn` keyword:
+    `^YYYY-MM-DD +(\*|!|txn)`), detected by the `Detect real close entries on main` shell step.
+    Scope is the 2026-09 include files only (where Wave 2 close work lands), per spec.
+- Result: `build/*` PRs stay green when only controls fail; `close/*` branches / `close(` PRs
+  and post-entry pushes to main still fail on controls.
+
 ## Sun 6 Sep — controls-ci (Wave 1)
 - Branch `build/controls-ci`. TDD: tests first, then impl.
 - `closeops/controls.py`: C1-C10 per plan §8. `ControlResult` defined here (self-contained; can move to models.py at integration). `run_all(repo_root)` wires controls to repo files defensively (missing data → failing result, no crash). Money via Decimal only.
