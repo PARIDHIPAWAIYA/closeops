@@ -1,0 +1,273 @@
+{
+  "task": "bank-rec",
+  "period": "2026-09",
+  "note": "Hand-written fixture matching plan 6.1 prepare output. One line per trap T1-T15 (T8/T14/T15 have two lines). T11/T12 are reconciling items; in a real run they route to bank-rec-reconciling.json, and are included here only so the fixture exercises every trap.",
+  "accounts": [
+    "Assets:Bank:Operating", "Assets:AR", "Assets:Dodo:Balance",
+    "Liabilities:AP", "Income:Subscriptions", "Income:Interest",
+    "Expenses:Software", "Expenses:Payroll:Salaries", "Expenses:Rent",
+    "Expenses:BankFees", "Expenses:PaymentProcessing", "Expenses:FX",
+    "Equity:Suspense"
+  ],
+  "lines": [
+    {
+      "line": 11, "trap": "T1", "date": "2026-09-03",
+      "description": "ACME SOFTWARE INC", "amount": "-1500.00",
+      "source": "data/bank/sep-2026.csv#L11",
+      "candidates": [
+        {"id": "L11-exact", "kind": "exact", "score": "0.95",
+         "account": "Liabilities:AP",
+         "postings": [{"account": "Liabilities:AP", "amount": "1500.00"},
+                      {"account": "Assets:Bank:Operating", "amount": "-1500.00"}],
+         "evidence": ["AP-0001"], "narration": "Pay AP-0001 ACME SOFTWARE INC"},
+        {"id": "L11-none", "kind": "none", "score": "0.20",
+         "account": "Equity:Suspense",
+         "postings": [{"account": "Equity:Suspense", "amount": "1500.00"},
+                      {"account": "Assets:Bank:Operating", "amount": "-1500.00"}],
+         "evidence": [], "narration": "Unmatched"}
+      ]
+    },
+    {
+      "line": 17, "trap": "T2", "date": "2026-09-05",
+      "description": "STRIPE CUSTOMER PMT", "amount": "4200.00",
+      "source": "data/bank/sep-2026.csv#L17",
+      "candidates": [
+        {"id": "L17-exact", "kind": "exact", "score": "0.95",
+         "account": "Assets:AR",
+         "postings": [{"account": "Assets:Bank:Operating", "amount": "4200.00"},
+                      {"account": "Assets:AR", "amount": "-4200.00"}],
+         "evidence": ["INV-2041"], "narration": "Collect INV-2041"}
+      ]
+    },
+    {
+      "line": 23, "trap": "T3", "date": "2026-09-06",
+      "description": "GUSTO PAY 0906", "amount": "-18450.00",
+      "source": "data/bank/sep-2026.csv#L23",
+      "candidates": [
+        {"id": "L23-rule", "kind": "rule", "score": "0.90",
+         "account": "Expenses:Payroll:Salaries",
+         "postings": [{"account": "Expenses:Payroll:Salaries", "amount": "18450.00"},
+                      {"account": "Assets:Bank:Operating", "amount": "-18450.00"}],
+         "evidence": ["rule:GUSTO"], "narration": "GUSTO PAY 0906"},
+        {"id": "L23-none", "kind": "none", "score": "0.20",
+         "account": "Equity:Suspense",
+         "postings": [{"account": "Equity:Suspense", "amount": "18450.00"},
+                      {"account": "Assets:Bank:Operating", "amount": "-18450.00"}],
+         "evidence": [], "narration": "Unmatched"}
+      ]
+    },
+    {
+      "line": 29, "trap": "T4", "date": "2026-09-07",
+      "description": "SERVICE FEE", "amount": "-35.00",
+      "source": "data/bank/sep-2026.csv#L29",
+      "candidates": [
+        {"id": "L29-rule", "kind": "rule", "score": "0.95",
+         "account": "Expenses:BankFees",
+         "postings": [{"account": "Expenses:BankFees", "amount": "35.00"},
+                      {"account": "Assets:Bank:Operating", "amount": "-35.00"}],
+         "evidence": ["rule:SERVICE FEE"], "narration": "Bank service fee"}
+      ]
+    },
+    {
+      "line": 41, "trap": "T5", "date": "2026-09-14",
+      "description": "ACME CORP", "amount": "-1250.00",
+      "source": "data/bank/sep-2026.csv#L41",
+      "candidates": [
+        {"id": "L41-split", "kind": "split", "score": "0.70",
+         "account": "Liabilities:AP",
+         "postings": [{"account": "Liabilities:AP", "amount": "1200.00", "meta": {"invoice": "INV-118"}},
+                      {"account": "Liabilities:AP", "amount": "50.00", "meta": {"invoice": "INV-121"}},
+                      {"account": "Assets:Bank:Operating", "amount": "-1250.00"}],
+         "evidence": ["INV-118", "INV-121"],
+         "narration": "Split across INV-118 + INV-121"},
+        {"id": "L41-none", "kind": "none", "score": "0.20",
+         "account": "Equity:Suspense",
+         "postings": [{"account": "Equity:Suspense", "amount": "1250.00"},
+                      {"account": "Assets:Bank:Operating", "amount": "-1250.00"}],
+         "evidence": [], "narration": "Unmatched"}
+      ]
+    },
+    {
+      "line": 47, "trap": "T6", "date": "2026-09-16",
+      "description": "GLOBEX PARTIAL", "amount": "-800.00",
+      "source": "data/bank/sep-2026.csv#L47",
+      "candidates": [
+        {"id": "L47-partial", "kind": "partial", "score": "0.65",
+         "account": "Liabilities:AP",
+         "postings": [{"account": "Liabilities:AP", "amount": "800.00", "meta": {"invoice": "AP-0014"}},
+                      {"account": "Assets:Bank:Operating", "amount": "-800.00"}],
+         "evidence": ["AP-0014"],
+         "narration": "Partial payment of AP-0014 (2000.00), 1200.00 remains open"}
+      ]
+    },
+    {
+      "line": 53, "trap": "T7", "date": "2026-09-18",
+      "description": "EURO VENDOR SARL", "amount": "-1012.00",
+      "source": "data/bank/sep-2026.csv#L53",
+      "candidates": [
+        {"id": "L53-fx", "kind": "fx", "score": "0.80",
+         "account": "Liabilities:AP",
+         "postings": [{"account": "Liabilities:AP", "amount": "1005.00", "meta": {"invoice": "AP-0019"}},
+                      {"account": "Expenses:FX", "amount": "7.00"},
+                      {"account": "Assets:Bank:Operating", "amount": "-1012.00"}],
+         "evidence": ["AP-0019"],
+         "narration": "AP-0019 with 7.00 FX/rounding to Expenses:FX"}
+      ]
+    },
+    {
+      "line": 61, "trap": "T8a", "date": "2026-09-20",
+      "description": "ZOOM VIDEO", "amount": "-499.00",
+      "source": "data/bank/sep-2026.csv#L61",
+      "candidates": [
+        {"id": "L61-rule", "kind": "rule", "score": "0.90",
+         "account": "Expenses:Software",
+         "postings": [{"account": "Expenses:Software", "amount": "499.00"},
+                      {"account": "Assets:Bank:Operating", "amount": "-499.00"}],
+         "evidence": ["rule:ZOOM"], "narration": "ZOOM VIDEO"}
+      ]
+    },
+    {
+      "line": 62, "trap": "T8b", "date": "2026-09-20",
+      "description": "ZOOM VIDEO", "amount": "-499.00",
+      "source": "data/bank/sep-2026.csv#L62",
+      "candidates": [
+        {"id": "L62-rule", "kind": "rule", "score": "0.90",
+         "account": "Expenses:Software",
+         "postings": [{"account": "Expenses:Software", "amount": "499.00"},
+                      {"account": "Assets:Bank:Operating", "amount": "-499.00"}],
+         "evidence": ["rule:ZOOM"], "narration": "ZOOM VIDEO"},
+        {"id": "L62-duplicate", "kind": "duplicate", "score": "0.40",
+         "account": "Expenses:Software",
+         "postings": [{"account": "Expenses:Software", "amount": "499.00"},
+                      {"account": "Assets:Bank:Operating", "amount": "-499.00"}],
+         "evidence": ["data/bank/sep-2026.csv#L61"],
+         "narration": "Possible duplicate of L61 (same amount, same day)"}
+      ]
+    },
+    {
+      "line": 68, "trap": "T9", "date": "2026-09-22",
+      "description": "POS 4471 SHENZHEN", "amount": "-317.44",
+      "source": "data/bank/sep-2026.csv#L68",
+      "candidates": [
+        {"id": "L68-none", "kind": "none", "score": "0.20",
+         "account": "Equity:Suspense",
+         "postings": [{"account": "Equity:Suspense", "amount": "317.44"},
+                      {"account": "Assets:Bank:Operating", "amount": "-317.44"}],
+         "evidence": [], "narration": "Unknown payee POS 4471 SHENZHEN"}
+      ]
+    },
+    {
+      "line": 74, "trap": "T10", "date": "2026-09-24",
+      "description": "INITECH SHORTPAY", "amount": "-2940.00",
+      "source": "data/bank/sep-2026.csv#L74",
+      "candidates": [
+        {"id": "L74-discount", "kind": "partial", "score": "0.75",
+         "account": "Liabilities:AP",
+         "postings": [{"account": "Liabilities:AP", "amount": "3000.00", "meta": {"invoice": "AP-0021"}},
+                      {"account": "Income:Other", "amount": "-60.00"},
+                      {"account": "Assets:Bank:Operating", "amount": "-2940.00"}],
+         "evidence": ["AP-0021"],
+         "narration": "AP-0021 short-pay, 2% discount contra"}
+      ]
+    },
+    {
+      "line": 80, "trap": "T11", "date": "2026-09-29",
+      "description": "CHEQUE 1042 OUTSTANDING", "amount": "-640.00",
+      "source": "ledger/2026-09/bank-rec.beancount",
+      "candidates": [
+        {"id": "L80-reconciling", "kind": "reconciling", "score": "0.00",
+         "account": "",
+         "postings": [],
+         "evidence": ["cheque:1042"],
+         "narration": "Outstanding cheque #1042 dated Sep 29; reconciling item, not a September entry"}
+      ]
+    },
+    {
+      "line": 81, "trap": "T12", "date": "2026-09-30",
+      "description": "DEPOSIT IN TRANSIT", "amount": "2100.00",
+      "source": "ledger/2026-09/bank-rec.beancount",
+      "candidates": [
+        {"id": "L81-reconciling", "kind": "reconciling", "score": "0.00",
+         "account": "",
+         "postings": [],
+         "evidence": ["deposit:sep30"],
+         "narration": "Deposit in transit (ledger Sep 30, statement Oct 1); reconciling item"}
+      ]
+    },
+    {
+      "line": 86, "trap": "T13", "date": "2026-09-11",
+      "description": "AUGUST BILL PAYMT", "amount": "-4500.00",
+      "source": "data/bank/sep-2026.csv#L86",
+      "candidates": [
+        {"id": "L86-exact", "kind": "exact", "score": "0.95",
+         "account": "Liabilities:AP",
+         "postings": [{"account": "Liabilities:AP", "amount": "4500.00", "meta": {"invoice": "AP-0008"}},
+                      {"account": "Assets:Bank:Operating", "amount": "-4500.00"}],
+         "evidence": ["AP-0008"],
+         "narration": "Pays August bill AP-0008"}
+      ]
+    },
+    {
+      "line": 92, "trap": "T14a", "date": "2026-09-15",
+      "description": "DODO PAYOUT", "amount": "9700.00",
+      "source": "data/bank/sep-2026.csv#L92",
+      "candidates": [
+        {"id": "L92-payout", "kind": "payout", "score": "0.95",
+         "account": "Assets:Dodo:Balance",
+         "postings": [{"account": "Assets:Bank:Operating", "amount": "9700.00"},
+                      {"account": "Expenses:PaymentProcessing", "amount": "300.00"},
+                      {"account": "Assets:Dodo:Balance", "amount": "-10000.00"}],
+         "evidence": ["po_001"],
+         "narration": "Dodo payout po_001, net 9700 = gross 10000 - fee 300"}
+      ]
+    },
+    {
+      "line": 93, "trap": "T14b", "date": "2026-09-28",
+      "description": "DODO PAYOUT", "amount": "4850.00",
+      "source": "data/bank/sep-2026.csv#L93",
+      "candidates": [
+        {"id": "L93-payout", "kind": "payout", "score": "0.80",
+         "account": "Assets:Dodo:Balance",
+         "postings": [{"account": "Assets:Bank:Operating", "amount": "4850.00"},
+                      {"account": "Expenses:PaymentProcessing", "amount": "150.00"},
+                      {"account": "Assets:Dodo:Balance", "amount": "-5000.00"}],
+         "evidence": ["po_002"],
+         "narration": "Dodo payout po_002; fee absent from record, proposed 150 PaymentProcessing"}
+      ]
+    },
+    {
+      "line": 98, "trap": "T15a", "date": "2026-09-19",
+      "description": "DATADOG INC", "amount": "-1800.00",
+      "source": "data/bank/sep-2026.csv#L98",
+      "candidates": [
+        {"id": "L98-datadog", "kind": "exact", "score": "0.95",
+         "account": "Liabilities:AP",
+         "postings": [{"account": "Liabilities:AP", "amount": "1800.00", "meta": {"invoice": "AP-0030"}},
+                      {"account": "Assets:Bank:Operating", "amount": "-1800.00"}],
+         "evidence": ["AP-0030"], "narration": "Datadog bill AP-0030"},
+        {"id": "L98-aws", "kind": "exact", "score": "0.95",
+         "account": "Liabilities:AP",
+         "postings": [{"account": "Liabilities:AP", "amount": "1800.00", "meta": {"invoice": "AP-0031"}},
+                      {"account": "Assets:Bank:Operating", "amount": "-1800.00"}],
+         "evidence": ["AP-0031"], "narration": "AWS bill AP-0031 (same amount)"}
+      ]
+    },
+    {
+      "line": 99, "trap": "T15b", "date": "2026-09-19",
+      "description": "AWS EDS 1800 DATADOG REF", "amount": "-1800.00",
+      "source": "data/bank/sep-2026.csv#L99",
+      "candidates": [
+        {"id": "L99-aws", "kind": "exact", "score": "0.95",
+         "account": "Liabilities:AP",
+         "postings": [{"account": "Liabilities:AP", "amount": "1800.00", "meta": {"invoice": "AP-0031"}},
+                      {"account": "Assets:Bank:Operating", "amount": "-1800.00"}],
+         "evidence": ["AP-0031"], "narration": "AWS bill AP-0031"},
+        {"id": "L99-datadog", "kind": "exact", "score": "0.95",
+         "account": "Liabilities:AP",
+         "postings": [{"account": "Liabilities:AP", "amount": "1800.00", "meta": {"invoice": "AP-0030"}},
+                      {"account": "Assets:Bank:Operating", "amount": "-1800.00"}],
+         "evidence": ["AP-0030"], "narration": "Datadog bill AP-0030 (description contradicts vendor)"}
+      ]
+    }
+  ]
+}
