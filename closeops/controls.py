@@ -312,6 +312,20 @@ _COMPANY_DEFAULTS = {
 }
 
 
+_CONTROL_NAMES = {
+    1: "Ledger parses and balances",
+    2: "Trial balance nets to zero",
+    3: "Period lock",
+    4: "Non-empty source",
+    5: "Materiality approved",
+    6: "No duplicates",
+    7: "Bank reconciles",
+    8: "Suspense is zero",
+    9: "No open exceptions",
+    10: "Dodo balance",
+}
+
+
 def _pick(company: dict, *keys, default=None):
     for k in keys:
         if k in company and company[k] not in (None, ""):
@@ -359,10 +373,17 @@ def run_all(repo_root=".") -> list:
     ledger_path = root / "ledger" / "main.beancount"
     results = [c1_ledger_balances(ledger_path)]
 
+    # If the ledger is missing or produces no usable entries, C2-C10 cannot be
+    # evaluated honestly: a control that "passes" on an empty ledger is a false
+    # pass. Skip them explicitly as FAIL so absence never reads as compliance.
+    entries: list = []
     if ledger_path.exists():
         entries, _, _ = loader.load_file(str(ledger_path))
-    else:
-        entries = []
+    if not entries:
+        reason = "skipped: ledger missing/unparseable"
+        for cid in range(2, 11):
+            results.append(ControlResult(f"C{cid}", _CONTROL_NAMES[cid], False, reason))
+        return results
 
     results.append(c2_trial_balance(entries))
     results.append(c3_period_lock(entries, period_lock, period))
@@ -370,20 +391,36 @@ def run_all(repo_root=".") -> list:
     results.append(c5_materiality(entries, materiality, period))
     results.append(c6_no_duplicates(entries, period))
 
-    statement = _load_json(root / "data" / "bank" / "statement-balance.json", {})
-    statement_closing = _dec(
-        _pick(statement, "closing", "closing_balance", "balance", default="0"))
-    reconciling = _load_json(root / "exceptions" / "bank-rec-reconciling.json", {})
-    results.append(c7_bank_reconciles(entries, bank, statement_closing, reconciling))
+    # C7 requires the statement closing balance; never default it to 0.
+    statement_path = root / "data" / "bank" / "statement-balance.json"
+    statement = _load_json(statement_path, None) if statement_path.exists() else None
+    if statement is None:
+        results.append(ControlResult(
+            "C7", _CONTROL_NAMES[7], False,
+            "statement-balance.json missing or unparseable"))
+    else:
+        statement_closing = _dec(
+            _pick(statement, "closing", "closing_balance", "balance", default="0"))
+        reconciling = _load_json(root / "exceptions" / "bank-rec-reconciling.json", {})
+        results.append(c7_bank_reconciles(entries, bank, statement_closing, reconciling))
 
     results.append(c8_suspense_zero(entries, suspense))
     results.append(c9_no_open_exceptions(root / "exceptions"))
 
+    # C10 requires all three Dodo sources; never default any to an empty list.
     dodo_dir = root / "data" / "dodo"
-    payments = _load_json(dodo_dir / "payments.json", [])
-    refunds = _load_json(dodo_dir / "refunds.json", [])
-    payouts = _load_json(dodo_dir / "payouts.json", [])
-    results.append(c10_dodo_balance(entries, payments, refunds, payouts, dodo))
+    dodo_files = {name: dodo_dir / f"{name}.json"
+                  for name in ("payments", "refunds", "payouts")}
+    missing = [name for name, path in dodo_files.items() if not path.exists()]
+    if missing:
+        results.append(ControlResult(
+            "C10", _CONTROL_NAMES[10], False,
+            f"dodo file(s) missing: {', '.join(missing)}"))
+    else:
+        payments = _load_json(dodo_files["payments"], [])
+        refunds = _load_json(dodo_files["refunds"], [])
+        payouts = _load_json(dodo_files["payouts"], [])
+        results.append(c10_dodo_balance(entries, payments, refunds, payouts, dodo))
 
     return results
 

@@ -1,6 +1,7 @@
 """One test per control C1-C10, on hand-built fixtures (plan section 8)."""
 from __future__ import annotations
 
+import json
 from datetime import date
 from decimal import Decimal
 
@@ -284,11 +285,65 @@ def test_c10_fail_dropped_payout():
     assert not r.passed
 
 
-# --- run_all is defensive when repo data is absent --------------------------
+# --- run_all: absent data must never read as compliance ---------------------
 
-def test_run_all_missing_repo(tmp_path):
+MIN_LEDGER = """\
+option "operating_currency" "USD"
+
+2026-08-01 open Assets:Bank:Operating USD
+2026-08-01 open Equity:OpeningBalances USD
+
+2026-08-01 * "Opening"
+  Assets:Bank:Operating   100.00 USD
+  Equity:OpeningBalances
+"""
+
+
+def _build_min_repo(root, with_statement=True, with_dodo=True):
+    (root / "ledger").mkdir(parents=True, exist_ok=True)
+    (root / "ledger" / "main.beancount").write_text(MIN_LEDGER, encoding="utf-8")
+    (root / "data" / "bank").mkdir(parents=True, exist_ok=True)
+    if with_statement:
+        (root / "data" / "bank" / "statement-balance.json").write_text(
+            json.dumps({"closing": "100.00"}), encoding="utf-8")
+    dodo = root / "data" / "dodo"
+    dodo.mkdir(parents=True, exist_ok=True)
+    if with_dodo:
+        for name in ("payments", "refunds", "payouts"):
+            (dodo / f"{name}.json").write_text("[]", encoding="utf-8")
+    return root
+
+
+def test_run_all_shape(tmp_path):
     results = controls.run_all(tmp_path)
     assert len(results) == 10
     assert all(isinstance(r, ControlResult) for r in results)
-    ids = [r.id for r in results]
-    assert ids == [f"C{i}" for i in range(1, 11)]
+    assert [r.id for r in results] == [f"C{i}" for i in range(1, 11)]
+
+
+def test_run_all_missing_ledger_fails_c2_to_c10(tmp_path):
+    by_id = {r.id: r for r in controls.run_all(tmp_path)}
+    for i in range(2, 11):
+        assert not by_id[f"C{i}"].passed, f"C{i} must FAIL when ledger is missing"
+        assert "skipped" in by_id[f"C{i}"].detail.lower()
+
+
+def test_run_all_missing_statement_fails_c7(tmp_path):
+    _build_min_repo(tmp_path, with_statement=False, with_dodo=True)
+    by_id = {r.id: r for r in controls.run_all(tmp_path)}
+    assert not by_id["C7"].passed
+    assert "statement" in by_id["C7"].detail.lower()
+
+
+def test_run_all_missing_dodo_fails_c10(tmp_path):
+    _build_min_repo(tmp_path, with_statement=True, with_dodo=False)
+    by_id = {r.id: r for r in controls.run_all(tmp_path)}
+    assert not by_id["C10"].passed
+    assert "dodo" in by_id["C10"].detail.lower()
+
+
+def test_run_all_c9_passes_when_exceptions_absent(tmp_path):
+    # With a valid ledger and no exceptions/ dir, "no open exceptions" is genuine.
+    _build_min_repo(tmp_path)
+    by_id = {r.id: r for r in controls.run_all(tmp_path)}
+    assert by_id["C9"].passed
