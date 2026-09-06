@@ -225,7 +225,8 @@ python -m beancount.scripts.check ledger/main.beancount
 ## Repository layout
 
 ```
-closeops/          package: cli, ledger, models, controls, report, rules, tasks/, decide, trace, baseline
+closeops/          package: cli, ledger, models, controls, report, rules, tasks/{accruals,depreciation}
+                   (Wave 2, planned: tasks/bank_rec, decide, trace, baseline)
 data/              company.json, bank CSV + statement balance, AP invoices, fixed assets, Dodo fixtures, rules
 ledger/            main.beancount (opening + August + booked September) and ledger/2026-09/<task>.beancount
 exceptions/        <task>.yaml (human review queue) + bank-rec-reconciling.json (for C7)
