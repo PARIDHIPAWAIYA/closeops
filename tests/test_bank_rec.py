@@ -333,6 +333,23 @@ def test_baseline_funnel_monotonic(candidates):
     assert exact < rules_only <= agent < review == 116
 
 
+def test_baseline_exact_tier_excludes_flagged_duplicate():
+    """A line with a single qualifying exact candidate AND a duplicate flag must
+    not count toward the exact tier (the contract routes duplicates to review)."""
+    cand = {"lines": [{"line": 1, "candidates": [
+        {"kind": "exact", "score": "0.98",
+         "postings": [{"account": "Liabilities:AP", "amount": "100.00"},
+                      {"account": "Assets:Bank:Operating", "amount": "-100.00"}]},
+        {"kind": "duplicate", "score": "0.40",
+         "postings": [{"account": "Expenses:Software", "amount": "100.00"},
+                      {"account": "Assets:Bank:Operating", "amount": "-100.00"}]},
+    ]}]}
+    tiers = baseline.compute_tiers(cand, MAT,
+                                   decisions={"decisions": [{"line": 1, "choice": "exception"}]})
+    assert tiers["exact_baseline"]["auto"] == 0
+    assert tiers["rules_only"]["auto"] == 0
+
+
 def test_baseline_writes_metrics(repo):
     baseline.run(str(repo))
     metrics = json.loads((repo / "metrics.json").read_text())

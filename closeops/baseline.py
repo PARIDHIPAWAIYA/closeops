@@ -31,6 +31,8 @@ def _qualifies(cand: dict, materiality: Decimal, suspense: str) -> bool:
 
 
 def _exact_auto(line: dict, materiality: Decimal, suspense: str) -> bool:
+    if any(c["kind"] == "duplicate" for c in line["candidates"]):
+        return False  # a flagged duplicate is routed to review by the contract
     exacts = [c for c in line["candidates"] if c["kind"] == "exact"]
     # a single unambiguous exact match only (ties are left for the agent)
     return len(exacts) == 1 and _qualifies(exacts[0], materiality, suspense)
