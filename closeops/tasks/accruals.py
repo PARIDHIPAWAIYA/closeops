@@ -11,6 +11,7 @@ Money is always :class:`decimal.Decimal`; never float.
 from __future__ import annotations
 
 import json
+import re
 from decimal import Decimal
 from pathlib import Path
 
@@ -94,19 +95,43 @@ def prepare(repo=".") -> dict:
     return payload
 
 
+def _source_invoice(source) -> str:
+    """The invoice id encoded in an exception ``source`` (after the ``#``)."""
+    return str(source or "").rsplit("#", 1)[-1]
+
+
+def _exception_id(invoice_id: str) -> str:
+    """A stable exception id derived from the invoice id (INV-001 -> AC-001).
+
+    Derived, not positional, so approval state never migrates to another invoice
+    when the set or order of material accruals changes between apply runs.
+    """
+    match = re.search(r"(\d+)$", invoice_id)
+    return f"AC-{match.group(1)}" if match else f"AC-{invoice_id}"
+
+
 def _load_existing_exceptions(path: Path) -> dict:
-    """Map exception id -> {status, reviewer_note} from a prior apply, so the
-    controller's approve/reject decisions survive a re-apply."""
+    """Map invoice id -> {status, reviewer_note} from a prior apply.
+
+    Keyed on the invoice id parsed from ``source`` (a stable identity), so the
+    controller's approve/reject decisions follow the invoice they belong to even
+    if exception ordering changes on a re-apply.
+    """
     if not path.exists():
         return {}
     items = yaml.safe_load(path.read_text(encoding="utf-8")) or []
-    return {
-        i["id"]: {
+    state: dict = {}
+    for i in items:
+        if not isinstance(i, dict):
+            continue
+        invoice = _source_invoice(i.get("source"))
+        if not invoice:
+            continue
+        state[invoice] = {
             "status": i.get("status", "open"),
             "reviewer_note": i.get("reviewer_note", ""),
         }
-        for i in items if isinstance(i, dict) and "id" in i
-    }
+    return state
 
 
 def apply(repo=".") -> dict:
@@ -129,7 +154,6 @@ def apply(repo=".") -> dict:
     blocks: list[str] = []
     exceptions: list[dict] = []
     booked: list[str] = []
-    seq = 0
 
     for acc in plan["accruals"]:
         amount = Decimal(acc["amount"])
@@ -149,10 +173,10 @@ def apply(repo=".") -> dict:
             booked.append(acc["id"])
             continue
 
-        # Material accrual -> exception. Preserve any prior review decision.
-        seq += 1
-        exc_id = f"AC-{seq:03d}"
-        state = prior.get(exc_id) or prior.get(acc["id"]) or {}
+        # Material accrual -> exception. Preserve any prior review decision,
+        # matched by the invoice id (stable) rather than the exception id.
+        exc_id = _exception_id(acc["id"])
+        state = prior.get(acc["id"], {})
         status = state.get("status", "open")
         reviewer_note = state.get("reviewer_note", "")
 

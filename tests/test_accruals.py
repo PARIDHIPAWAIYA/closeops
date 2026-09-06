@@ -108,6 +108,29 @@ def test_apply_passes_bean_check(tmp_path):
     assert ok, out
 
 
+def test_approval_matched_by_invoice_not_exception_id(tmp_path):
+    """Approval state must follow the invoice (via source), not the positional
+    exception id: a prior exception with a different id but the same source is
+    still honored, so approval can never migrate to the wrong invoice."""
+    repo = _copy_repo(tmp_path)
+    accruals.prepare(repo)
+    accruals.apply(repo)
+    exc_path = repo / "exceptions" / "accruals.yaml"
+    items = yaml.safe_load(exc_path.read_text())
+    # Rewrite the exception id to something unrelated but keep its source.
+    for i in items:
+        i["id"] = "AC-999"
+        i["status"] = "approved"
+        i["reviewer_note"] = "approved under a renamed id"
+    exc_path.write_text(yaml.safe_dump(items, sort_keys=False))
+
+    accruals.apply(repo)
+    entries, errors, _ = ledger.load_ledger(repo / "ledger" / "main.beancount")
+    assert errors == []
+    accrued = -ledger.balance(entries, "Liabilities:Accrued:Expenses", "2026-09-30")
+    assert accrued == NON_MATERIAL_TOTAL + MATERIAL_TOTAL
+
+
 def test_apply_approved_materiality_is_booked(tmp_path):
     """Approval round-trip: once the controller approves the exception, a
     re-apply books the 14,500 entry with an approved-by meta (so C5 stays green)."""
