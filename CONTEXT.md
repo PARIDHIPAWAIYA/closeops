@@ -2,6 +2,33 @@
 
 Running log. Newest entry first. Keep it short: what is done, what is next, decisions.
 
+## Sun 6 Sep — runtime close: bank-rec (branch close/bank-rec, PR #9)
+- Ran the close worker per docs/prompts/worker-bank-rec.md: prepare -> decide
+  --packet -> wrote work/bank-rec/decisions.json (116 lines) -> decide --validate
+  (passed, stamped decided_by=worker session=closeops-12) -> apply -> check.
+- Decisions followed the contract: auto-post the top candidate only at score
+  >= 0.90; the 20 sub-0.90 / demotion lines -> "exception" (5 splits, 4 partials,
+  3 FX, 3 discounts, 3 unknown-payee, 1 ZOOM duplicate, 1 Dodo po_002 fee-missing),
+  each with a one-sentence rationale citing evidence ids. Never auto-posted to
+  Suspense; no amounts invented.
+- apply booked **94 entries** and opened **22 open exceptions**. Two extra vs the
+  20 I flagged came from apply's independent materiality gate: GUSTO -12,500 (L5,
+  material) and Dodo payout po_001 (L90, gross 10,000 == materiality) were demoted
+  to exceptions so C5 stays green.
+- `closeops check`: 7/10. C7/C9/C10 FAIL — all downstream of the 22 open
+  exceptions (unposted cash movements). Verified in a throwaway copy that
+  resolving the exceptions turns C7/C9/C10 green (C10 nets to the 150.00 residual
+  = po_002's missing fee); blind-approving instead surfaces C8 (Suspense=2,850)
+  and double-books the ZOOM duplicate — so the unknown-payee + duplicate items
+  genuinely need a controller decision (reject / reclassify off Suspense).
+- CI on PR #9: Tests 128 passed; only "Fail if controls failed" is red, from
+  C7/C9/C10 (open-exception failures). No non-exception failure to fix.
+- Committed ledger/2026-09/bank-rec.beancount, exceptions/bank-rec.yaml,
+  exceptions/bank-rec-reconciling.json ("close(2026-09): bank-rec entries").
+  close-report.md/metrics.json left untracked (CI regenerates + comments them).
+- STOPPED per instructions: hit 22 open exceptions that need controller review;
+  never resolved them. Needs controller review: 22 open exceptions.
+
 ## Sun 6 Sep — Wave 2: docs (branch build/docs)
 - Expanded `README.md` from the 2-line stub: setup, the prepare/decide/apply/check
   flow, architecture summary (deterministic sandwich), the ten controls, the
