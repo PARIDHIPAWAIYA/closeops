@@ -48,6 +48,16 @@ def fmt(d: Decimal) -> str:
     return f"{d:.2f}"
 
 
+def write_lf(path: Path, text: str) -> None:
+    """Write UTF-8 text with LF newlines regardless of platform.
+
+    ``newline="\\n"`` disables the text-mode translation that would otherwise turn
+    every ``\\n`` into ``\\r\\n`` on Windows, so regenerating the dataset does not
+    dirty every file with line-ending-only diffs.
+    """
+    path.write_text(text, encoding="utf-8", newline="\n")
+
+
 # ---------------------------------------------------------------------------
 # Static reference data
 # ---------------------------------------------------------------------------
@@ -589,8 +599,8 @@ def write_all(ds: dict) -> None:
     (ROOT / "data" / "rules").mkdir(parents=True, exist_ok=True)
     (ROOT / "ledger" / "2026-09").mkdir(parents=True, exist_ok=True)
 
-    (ROOT / "data" / "company.json").write_text(
-        json.dumps(ds["company"], indent=2) + "\n", encoding="utf-8")
+    write_lf(ROOT / "data" / "company.json",
+             json.dumps(ds["company"], indent=2) + "\n")
 
     # bank CSV
     buf = io.StringIO()
@@ -599,13 +609,13 @@ def write_all(ds: dict) -> None:
     for ln in ds["bank_lines"]:
         w.writerow([ln["date"], ln["description"], fmt(ln["amount"]),
                     fmt(ln["balance"]), ln["reference"]])
-    (ROOT / "data" / "bank" / "sep-2026.csv").write_text(buf.getvalue(), encoding="utf-8")
+    write_lf(ROOT / "data" / "bank" / "sep-2026.csv", buf.getvalue())
 
-    (ROOT / "data" / "bank" / "statement-balance.json").write_text(
-        json.dumps(ds["statement_balance"], indent=2) + "\n", encoding="utf-8")
+    write_lf(ROOT / "data" / "bank" / "statement-balance.json",
+             json.dumps(ds["statement_balance"], indent=2) + "\n")
 
-    (ROOT / "data" / "ap" / "invoices.json").write_text(
-        json.dumps(ds["invoices"], indent=2) + "\n", encoding="utf-8")
+    write_lf(ROOT / "data" / "ap" / "invoices.json",
+             json.dumps(ds["invoices"], indent=2) + "\n")
 
     # fixed assets CSV
     buf = io.StringIO()
@@ -615,7 +625,7 @@ def write_all(ds: dict) -> None:
     for a in ds["fixed_assets"]:
         w.writerow([a["id"], a["description"], fmt(a["cost"]), fmt(a["salvage"]),
                     a["life_months"], a["in_service"], a["account"]])
-    (ROOT / "data" / "fixed-assets.csv").write_text(buf.getvalue(), encoding="utf-8")
+    write_lf(ROOT / "data" / "fixed-assets.csv", buf.getvalue())
 
     # matching rules
     matching = """\
@@ -637,22 +647,20 @@ def write_all(ds: dict) -> None:
   account: "Expenses:Software"
   confidence: 0.90
 """
-    (ROOT / "data" / "rules" / "matching.yaml").write_text(matching, encoding="utf-8")
-    (ROOT / "data" / "rules" / "learned.yaml").write_text(
-        "# Learned rules are appended by Wave 2 (rerun). Starts empty.\n[]\n",
-        encoding="utf-8")
+    write_lf(ROOT / "data" / "rules" / "matching.yaml", matching)
+    write_lf(ROOT / "data" / "rules" / "learned.yaml",
+             "# Learned rules are appended by Wave 2 (rerun). Starts empty.\n[]\n")
 
     # Dodo fixtures
     fetch_dodo.write_fixtures(ds["dodo"])
 
     # ledger
-    (ROOT / "ledger" / "main.beancount").write_text(render_ledger(ds), encoding="utf-8")
+    write_lf(ROOT / "ledger" / "main.beancount", render_ledger(ds))
     for task in ("bank-rec", "accruals", "depreciation"):
         stub = ROOT / "ledger" / "2026-09" / f"{task}.beancount"
-        stub.write_text(
-            f";; ledger/2026-09/{task}.beancount\n"
-            f";; Written by the {task} worker (Wave 2). Placeholder so main parses.\n",
-            encoding="utf-8")
+        write_lf(stub,
+                 f";; ledger/2026-09/{task}.beancount\n"
+                 f";; Written by the {task} worker (Wave 2). Placeholder so main parses.\n")
 
 
 def summary(ds: dict) -> dict:

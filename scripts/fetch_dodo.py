@@ -119,8 +119,9 @@ def fetch_live() -> dict:
 def write_fixtures(data: dict, out_dir: Path = DODO_DIR) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     for name in ("payouts", "payments", "refunds"):
+        # newline="\n" keeps LF on Windows so re-fetching produces no spurious diffs.
         (out_dir / f"{name}.json").write_text(
-            json.dumps(data[name], indent=2) + "\n", encoding="utf-8"
+            json.dumps(data[name], indent=2) + "\n", encoding="utf-8", newline="\n"
         )
 
 
