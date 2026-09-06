@@ -2,6 +2,16 @@
 
 Running log. Newest entry first. Keep it short: what is done, what is next, decisions.
 
+## Sun 6 Sep - runtime close: depreciation (branch close/depreciation-2)
+- prepare -> decide --packet (0 lines; depreciation is fully deterministic) -> apply -> check.
+- 3 entries booked, total 1087.78: FA-001 777.78 (full month), FA-002 160.00 (full month),
+  FA-003 150.00 (half-month, in service 2026-09-20). FA-004 flagged fully depreciated, no entry.
+- check: 10/10 controls pass (bank-rec and accruals already merged to main).
+- Note: the AO worker sessions for this task (closeops-14, then closeops-15) hit an AO
+  workspace-provisioning failure and internal errors, so the controller ran the same four
+  CLI steps directly. bank-rec and accruals were both completed end to end by AO workers.
+
+
 ## Sun 6 Sep — runtime close: accruals (branch close/accruals)
 - Ran the accruals close per docs/prompts/worker-accruals.md: prepare -> decide
   (packet/validate) -> apply -> check on branch close/accruals off main.
