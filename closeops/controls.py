@@ -20,6 +20,8 @@ import yaml
 from beancount import loader
 from beancount.core import data
 
+from . import trace
+
 ZERO = Decimal("0")
 CENT = Decimal("0.005")  # tolerance for money comparisons
 PERIOD_TAG = "2026-09"
@@ -82,6 +84,7 @@ def _sum(values: Iterable) -> Decimal:
 # C1 — ledger parses and balances
 # --------------------------------------------------------------------------- #
 
+@trace.tool_span("C1")
 def c1_ledger_balances(ledger_path) -> ControlResult:
     path = Path(ledger_path)
     if not path.exists():
@@ -99,6 +102,7 @@ def c1_ledger_balances(ledger_path) -> ControlResult:
 # C2 — trial balance nets to zero
 # --------------------------------------------------------------------------- #
 
+@trace.tool_span("C2")
 def c2_trial_balance(entries: Sequence, as_of: date = PERIOD_END) -> ControlResult:
     total = ZERO
     for e in _transactions(entries):
@@ -116,6 +120,7 @@ def c2_trial_balance(entries: Sequence, as_of: date = PERIOD_END) -> ControlResu
 # C3 — period lock
 # --------------------------------------------------------------------------- #
 
+@trace.tool_span("C3")
 def c3_period_lock(entries: Sequence, period_lock_before: date,
                    period_tag: str = PERIOD_TAG) -> ControlResult:
     bad = [e for e in _transactions(entries)
@@ -131,6 +136,7 @@ def c3_period_lock(entries: Sequence, period_lock_before: date,
 # C4 — every period entry has a non-empty source
 # --------------------------------------------------------------------------- #
 
+@trace.tool_span("C4")
 def c4_entry_source(entries: Sequence, period_tag: str = PERIOD_TAG) -> ControlResult:
     bad = []
     for e in _transactions(entries):
@@ -150,6 +156,7 @@ def c4_entry_source(entries: Sequence, period_tag: str = PERIOD_TAG) -> ControlR
 # C5 — postings at/above materiality carry approved-by
 # --------------------------------------------------------------------------- #
 
+@trace.tool_span("C5")
 def c5_materiality(entries: Sequence, materiality: Decimal,
                    period_tag: str = PERIOD_TAG) -> ControlResult:
     materiality = _dec(materiality)
@@ -185,6 +192,7 @@ def _dup_key(e):
     return (e.date, postings, source)
 
 
+@trace.tool_span("C6")
 def c6_no_duplicates(entries: Sequence, period_tag: str = PERIOD_TAG) -> ControlResult:
     seen: dict = {}
     dups = []
@@ -218,6 +226,7 @@ def _reconciling_amounts(reconciling: dict, key: str) -> Decimal:
     return total
 
 
+@trace.tool_span("C7")
 def c7_bank_reconciles(entries: Sequence, bank_account: str,
                        statement_closing: Decimal, reconciling: dict,
                        as_of: date = PERIOD_END) -> ControlResult:
@@ -238,6 +247,7 @@ def c7_bank_reconciles(entries: Sequence, bank_account: str,
 # C8 — suspense is zero
 # --------------------------------------------------------------------------- #
 
+@trace.tool_span("C8")
 def c8_suspense_zero(entries: Sequence, suspense_account: str,
                      as_of: date = PERIOD_END) -> ControlResult:
     bal = account_balance(entries, suspense_account, as_of)
@@ -250,6 +260,7 @@ def c8_suspense_zero(entries: Sequence, suspense_account: str,
 # C9 — no open exceptions
 # --------------------------------------------------------------------------- #
 
+@trace.tool_span("C9")
 def c9_no_open_exceptions(exceptions_dir) -> ControlResult:
     directory = Path(exceptions_dir)
     open_ids = []
@@ -278,6 +289,7 @@ def _payout_gross(payout: dict) -> Decimal:
     return _dec(payout.get("amount", 0)) + _dec(payout.get("fee", 0))
 
 
+@trace.tool_span("C10")
 def c10_dodo_balance(entries: Sequence, payments: Sequence, refunds: Sequence,
                      payouts: Sequence, dodo_account: str,
                      as_of: date = PERIOD_END) -> ControlResult:
