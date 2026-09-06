@@ -1,0 +1,48 @@
+name: controls
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  controls:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: pip install -e '.[test,trace,dodo]'
+
+      - name: Tests
+        run: pytest -q
+
+      - name: Controls
+        id: controls
+        continue-on-error: true
+        run: |
+          closeops check --json | tee controls.json
+          exit "${PIPESTATUS[0]}"
+
+      - name: Report
+        run: closeops report
+
+      - name: PR comment
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr comment "${{ github.event.pull_request.number }}" --body-file close-report.md
+
+      - name: Fail if controls failed
+        if: steps.controls.outcome == 'failure'
+        run: |
+          echo "One or more controls failed."
+          exit 1

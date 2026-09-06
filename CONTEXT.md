@@ -2,6 +2,22 @@
 
 Running log. Newest entry first. Keep it short: what is done, what is next, decisions.
 
+## Sun 6 Sep — controls-ci rebased on merged data-ledger
+- Rebased `build/controls-ci` onto main (data-ledger merged). 57 tests pass.
+- `closeops check` on the real ledger: 8/10 pass. C7 and C10 FAIL — both expected
+  pre-bank-rec (Wave 2), NOT controls bugs:
+  - C7: bank-rec has not posted September's ~120 bank lines and
+    `exceptions/bank-rec-reconciling.json` (outstanding cheques / deposits in
+    transit, a bank-rec output) does not exist yet. Reconciles after bank-rec.
+  - C10: `Assets:Dodo:Balance` = 15,000 = payments − refunds with zero payout
+    clearings posted (the `DODO PAYOUT` lines are bank-rec traps T14). Nets after
+    bank-rec posts the payout credits.
+- Wave-2 follow-up (flagged to orchestrator): confirm the C10 "paid-out gross"
+  definition against bank-rec's actual Dodo postings — po_002's fee (150) is
+  omitted from the record (T14), so whether Dodo nets to 0 or to the 150 residual
+  depends on how bank-rec books the missing fee. C10 kept as the plan's literal
+  formula (gross = payout.amount + fee) for now; revisit once bank-rec lands.
+
 ## Sun 6 Sep — Wave 1: data-ledger (branch build/data-ledger)
 - Done: `closeops/models.py` (StatementLine, Invoice, Asset, Payout, Candidate,
   Decision, Exception, ControlResult — Decimal money, `from_dict`/`to_dict`).
@@ -28,6 +44,18 @@ Running log. Newest entry first. Keep it short: what is done, what is next, deci
   (trap T14 second payout). Reconciling items (3 cheques + 1 deposit) are
   ledger-only, not on the September statement.
 - Next: controls-ci worker (C1–C10, report, cli), then Wave 2 bank-rec.
+
+## Sun 6 Sep — controls-ci (Wave 1)
+- Branch `build/controls-ci`. TDD: tests first, then impl.
+- `closeops/controls.py`: C1-C10 per plan §8. `ControlResult` defined here (self-contained; can move to models.py at integration). `run_all(repo_root)` wires controls to repo files defensively (missing data → failing result, no crash). Money via Decimal only.
+  - C7 uses plan formula: ledger bank == statement closing + outstanding cheques − deposits in transit.
+  - C10: Dodo:Balance == Σpayments − Σrefunds − Σ paid-out gross, where paid-out gross = payout.amount + payout.fee.
+- `closeops/report.py`: `close-report.md` + `metrics.json` — header, control table, metrics/funnel block, entries, exceptions (collapsed in <details> when >5), reconciling items.
+- `closeops/cli.py`: `check [--json]`, `report`, `status`. Entry point `closeops`; also `python -m closeops.cli`. prepare/decide/apply/baseline/rerun left to Wave 2.
+- `.github/workflows/controls.yml`: PR + push main; pytest -q; `closeops check --json` (continue-on-error, PIPESTATUS exit); `closeops report`; `gh pr comment --body-file close-report.md` on PRs; fail if controls failed. No secrets.
+- Tests: `tests/test_controls.py` (per control, hand-built beancount fixtures), `tests/test_report.py`. 32 passing.
+- Note for integration: controls read `data/company.json` (key aliases tolerated) and expect ledger/main.beancount from data-ledger; C1 fails standalone until data-ledger merges (expected).
+- Next: open PR `build: controls-ci`, address CI comments.
 
 ## Sun 6 Sep — start
 - Repo created; AO orchestrator started with the BUILD prompt (plan.md §10.1).
